@@ -5,11 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Smart Saving App</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+Thai:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <style>
-        body { font-family: 'Noto Sans Thai', sans-serif; }
+        body { 
+            font-family: 'Inter', 'Noto Sans Thai', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+            letter-spacing: -0.01em;
+        }
         .material-icons { font-family: 'Material Icons'; }
+        .font-display { font-weight: 700; letter-spacing: -0.02em; }
+        .font-medium { font-weight: 600; }
+        .font-semibold { font-weight: 700; }
+        .text-balance { text-wrap: balance; }
     </style>
 </head>
 <body class="bg-gray-50 min-h-screen">
@@ -47,7 +55,7 @@
             <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
                 <div class="flex items-center justify-between mb-3">
                     <h3 class="font-medium text-gray-900">เป้าหมายเดือนนี้</h3>
-                    <button id="setGoalBtn" class="text-blue-600 text-sm font-medium">ตั้งเป้าหมาย</button>
+                    <button id="setGoalBtn" class="text-blue-600 text-sm font-medium disabled:text-gray-400 disabled:cursor-not-allowed">ตั้งเป้าหมาย</button>
                 </div>
                 <div class="space-y-2">
                     <div class="flex justify-between text-sm">
@@ -104,7 +112,7 @@
                         <input type="date" id="date" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" required>
                     </div>
 
-                    <button type="submit" class="w-full bg-blue-600 text-white py-4 rounded-lg font-semibold text-lg hover:bg-blue-700 transition-colors shadow-lg mt-6 flex items-center justify-center space-x-2">
+                    <button type="submit" id="saveSavingBtn" class="w-full bg-blue-600 text-white py-4 rounded-lg font-semibold text-lg hover:bg-blue-700 transition-colors shadow-lg mt-6 flex items-center justify-center space-x-2 disabled:bg-gray-400 disabled:cursor-not-allowed">
                         <span class="material-icons">save</span>
                         <span>บันทึกการออม</span>
                     </button>
@@ -167,6 +175,18 @@
                         </button>
                     </div>
                     <input type="file" id="avatarInput" accept="image/*" class="hidden">
+                    
+                    <!-- Avatar Selection -->
+                    <div id="avatarSelection" class="hidden mt-4 p-4 bg-gray-50 rounded-lg">
+                        <p class="text-sm font-medium text-gray-700 mb-3">เลือกอวตาร</p>
+                        <div class="grid grid-cols-5 gap-3" id="avatarGrid">
+                            <!-- Avatar options will be populated here -->
+                        </div>
+                        <div class="flex space-x-2 mt-3">
+                            <button id="uploadPhotoBtn" class="flex-1 py-2 px-3 bg-blue-600 text-white rounded-lg text-sm font-medium">อัปโหลดรูป</button>
+                            <button id="cancelAvatarBtn" class="flex-1 py-2 px-3 border border-gray-300 rounded-lg text-sm font-medium">ยกเลิก</button>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Nickname -->
@@ -175,7 +195,7 @@
                     <input type="text" id="nickname" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="กรอกชื่อเล่น">
                 </div>
 
-                <button id="saveProfile" class="w-full bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors">
+                <button id="saveProfile" class="w-full bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed">
                     บันทึกโปรไฟล์
                 </button>
             </div>
@@ -213,12 +233,12 @@
                     <div class="p-4 flex items-center justify-between">
                         <div class="flex items-center space-x-3">
                             <span class="material-icons text-gray-600">palette</span>
-                            <span class="font-medium">ธีม</span>
+                            <div>
+                                <div class="font-medium">ธีม</div>
+                                <div class="text-sm text-gray-500">ปรับอัตโนมัติตามเวลา</div>
+                            </div>
                         </div>
-                        <select id="theme" class="text-sm border border-gray-300 rounded px-2 py-1">
-                            <option value="light">สว่าง</option>
-                            <option value="dark">มืด</option>
-                        </select>
+                        <span class="text-blue-600 text-sm font-medium">อัตโนมัติ</span>
                     </div>
                     <button id="securityBtn" class="w-full p-4 text-left flex items-center justify-between hover:bg-gray-50">
                         <div class="flex items-center space-x-3">
@@ -235,12 +255,12 @@
                             <span class="material-icons text-gray-600">info</span>
                             <div>
                                 <div class="font-medium">เวอร์ชัน</div>
-                                <div class="text-sm text-gray-500">Smart Saving App v3.0.0</div>
+                                <div class="text-sm text-gray-500" id="versionText">Smart Saving App v3.0.0</div>
                             </div>
                         </div>
                         <div class="text-right">
-                            <div class="text-sm text-green-600 font-medium">ล่าสุด</div>
-                            <div class="text-xs text-gray-500">อัปเดต 15 ธ.ค. 2024</div>
+                            <div class="text-sm font-medium" id="versionStatus">กำลังดำเนินการอัปเดต</div>
+                            <div class="text-xs text-gray-500" id="versionDate">อัปเดต 15 ธ.ค. 2024</div>
                         </div>
                     </div>
 
@@ -324,7 +344,7 @@
                 </div>
                 <div class="flex space-x-3">
                     <button id="cancelGoal" class="flex-1 py-3 border border-gray-300 rounded-lg font-medium">ยกเลิก</button>
-                    <button id="saveGoal" class="flex-1 py-3 bg-blue-600 text-white rounded-lg font-medium">บันทึก</button>
+                    <button id="saveGoal" class="flex-1 py-3 bg-blue-600 text-white rounded-lg font-medium disabled:bg-gray-400 disabled:cursor-not-allowed">บันทึก</button>
                 </div>
             </div>
         </div>
@@ -355,8 +375,9 @@
             savings: JSON.parse(localStorage.getItem('savings')) || [],
             goal: JSON.parse(localStorage.getItem('goal')) || { amount: 0, months: 1 },
             profile: JSON.parse(localStorage.getItem('profile')) || { nickname: '', avatar: '' },
-            settings: JSON.parse(localStorage.getItem('settings')) || { notifications: true, theme: 'light' },
+            settings: JSON.parse(localStorage.getItem('settings')) || { notifications: true, theme: 'auto' },
             security: JSON.parse(localStorage.getItem('security')) || { verified: false, faceData: '' },
+            version: JSON.parse(localStorage.getItem('version')) || { current: '4.0.0', status: 'latest', lastUpdate: new Date().toISOString() },
             categories: {
                 daily: { name: 'ค่าใช้จ่ายประจำวัน', icon: 'shopping_cart', color: 'blue' },
                 emergency: { name: 'เงินฉุกเฉิน', icon: 'emergency', color: 'red' },
@@ -364,6 +385,11 @@
                 investment: { name: 'การลงทุน', icon: 'trending_up', color: 'purple' }
             }
         };
+
+        // Cartoon avatars for profile - 10 options
+        const cartoonAvatars = [
+            '🐱', '🐶', '🐰', '🦊', '🐻', '🐼', '🐨', '🐯', '🦁', '🐸'
+        ];
 
         // Initialize app
         document.addEventListener('DOMContentLoaded', function() {
@@ -375,6 +401,8 @@
             updateProfile();
             loadSettings();
             checkNotifications();
+            initVersionUpdate();
+            updateButtonStates();
             
             // Set today's date as default
             document.getElementById('date').valueAsDate = new Date();
@@ -410,13 +438,14 @@
             document.getElementById('factoryResetBtn').addEventListener('click', factoryReset);
 
             document.getElementById('saveProfile').addEventListener('click', saveProfile);
-            document.getElementById('changeAvatarBtn').addEventListener('click', () => {
+            document.getElementById('changeAvatarBtn').addEventListener('click', showAvatarSelection);
+            document.getElementById('avatarInput').addEventListener('change', handleAvatarChange);
+            document.getElementById('uploadPhotoBtn').addEventListener('click', () => {
                 document.getElementById('avatarInput').click();
             });
-            document.getElementById('avatarInput').addEventListener('change', handleAvatarChange);
+            document.getElementById('cancelAvatarBtn').addEventListener('click', hideAvatarSelection);
 
-            // Settings
-            document.getElementById('theme').addEventListener('change', handleThemeChange);
+            // Settings - Theme is now auto-only
             document.getElementById('securityBtn').addEventListener('click', showSecurityModal);
             document.getElementById('cancelSecurity').addEventListener('click', hideSecurityModal);
             document.getElementById('takePicture').addEventListener('click', takePicture);
@@ -451,6 +480,13 @@
 
         function handleAddSaving(e) {
             e.preventDefault();
+            
+            // Check if user is verified
+            if (!appData.security.verified || !appData.security.faceData) {
+                showErrorNotification('กรุณายืนยันตัวตนก่อนใช้งาน');
+                showSecurityModal();
+                return;
+            }
             
             const amount = parseFloat(document.getElementById('amount').value);
             const category = document.getElementById('category').value;
@@ -647,6 +683,13 @@
         }
 
         function deleteSaving(id) {
+            // Check if user is verified
+            if (!appData.security.verified || !appData.security.faceData) {
+                showErrorNotification('กรุณายืนยันตัวตนก่อนใช้งาน');
+                showSecurityModal();
+                return;
+            }
+            
             if (confirm('คุณต้องการลบรายการนี้หรือไม่?')) {
                 appData.savings = appData.savings.filter(saving => saving.id !== id);
                 localStorage.setItem('savings', JSON.stringify(appData.savings));
@@ -654,6 +697,7 @@
                 updateHistory();
                 updateCategories();
                 updateRecentPage();
+                showSuccessNotification('ลบรายการเรียบร้อยแล้ว');
             }
         }
 
@@ -672,6 +716,14 @@
         }
 
         function saveGoal() {
+            // Check if user is verified
+            if (!appData.security.verified || !appData.security.faceData) {
+                showErrorNotification('กรุณายืนยันตัวตนก่อนใช้งาน');
+                hideGoalModal();
+                showSecurityModal();
+                return;
+            }
+            
             const amount = parseFloat(document.getElementById('goalAmount').value);
             const months = parseInt(document.getElementById('goalMonths').value);
 
@@ -680,7 +732,7 @@
                 localStorage.setItem('goal', JSON.stringify(appData.goal));
                 updateDashboard();
                 hideGoalModal();
-                alert('ตั้งเป้าหมายเรียบร้อยแล้ว!');
+                showSuccessNotification('ตั้งเป้าหมายเรียบร้อยแล้ว!');
             }
         }
 
@@ -697,11 +749,20 @@
             const settingsAvatar = document.getElementById('settingsAvatar');
             
             if (profile.avatar) {
-                profileAvatar.innerHTML = `<img src="${profile.avatar}" class="w-full h-full rounded-full object-cover">`;
-                settingsAvatar.innerHTML = `<img src="${profile.avatar}" class="w-full h-full rounded-full object-cover">`;
+                if (profile.avatar.startsWith('data:') || profile.avatar.startsWith('http')) {
+                    // Photo avatar
+                    profileAvatar.innerHTML = `<img src="${profile.avatar}" class="w-full h-full rounded-full object-cover">`;
+                    settingsAvatar.innerHTML = `<img src="${profile.avatar}" class="w-full h-full rounded-full object-cover">`;
+                } else {
+                    // Emoji avatar
+                    profileAvatar.innerHTML = `<div class="text-4xl">${profile.avatar}</div>`;
+                    settingsAvatar.innerHTML = `<div class="text-lg">${profile.avatar}</div>`;
+                }
             } else {
-                profileAvatar.innerHTML = '<span class="material-icons text-white text-3xl">person</span>';
-                settingsAvatar.innerHTML = '<span class="material-icons text-white text-sm">person</span>';
+                // Default random cartoon avatar if no avatar is set
+                const randomAvatar = cartoonAvatars[Math.floor(Math.random() * cartoonAvatars.length)];
+                profileAvatar.innerHTML = `<div class="text-4xl">${randomAvatar}</div>`;
+                settingsAvatar.innerHTML = `<div class="text-lg">${randomAvatar}</div>`;
             }
             
             // Ensure edit button is always visible
@@ -712,6 +773,34 @@
             
             // Update settings nickname display
             document.getElementById('settingsNickname').textContent = profile.nickname || 'โปรไฟล์';
+            
+            // Populate avatar grid
+            populateAvatarGrid();
+        }
+
+        function populateAvatarGrid() {
+            const avatarGrid = document.getElementById('avatarGrid');
+            avatarGrid.innerHTML = cartoonAvatars.map(avatar => `
+                <button class="w-12 h-12 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center text-2xl transition-colors shadow-sm hover:shadow-md" onclick="selectAvatar('${avatar}')">
+                    ${avatar}
+                </button>
+            `).join('');
+        }
+
+        function showAvatarSelection() {
+            document.getElementById('avatarSelection').classList.remove('hidden');
+        }
+
+        function hideAvatarSelection() {
+            document.getElementById('avatarSelection').classList.add('hidden');
+        }
+
+        function selectAvatar(avatar) {
+            appData.profile.avatar = avatar;
+            localStorage.setItem('profile', JSON.stringify(appData.profile));
+            updateProfile();
+            hideAvatarSelection();
+            showSuccessNotification('เปลี่ยนอวตารเรียบร้อยแล้ว!');
         }
 
         function saveProfile() {
@@ -743,12 +832,38 @@
         function loadSettings() {
             const settings = appData.settings;
             
-            // Load theme setting
-            document.getElementById('theme').value = settings.theme;
-            applyTheme(settings.theme);
+            // Force auto theme
+            settings.theme = 'auto';
+            appData.settings.theme = 'auto';
+            localStorage.setItem('settings', JSON.stringify(appData.settings));
+            applyTheme('auto');
             
             // Update security status
             updateSecurityStatus();
+        }
+
+        function initVersionUpdate() {
+            // Always set to latest version
+            appData.version.current = '4.0.0';
+            appData.version.status = 'latest';
+            appData.version.lastUpdate = new Date().toISOString();
+            localStorage.setItem('version', JSON.stringify(appData.version));
+            updateVersionDisplay();
+        }
+
+        function updateVersionDisplay() {
+            const versionText = document.getElementById('versionText');
+            const versionStatus = document.getElementById('versionStatus');
+            const versionDate = document.getElementById('versionDate');
+            
+            versionText.textContent = `Smart Saving App v${appData.version.current}`;
+            versionStatus.textContent = 'ล่าสุด';
+            versionStatus.className = 'text-sm text-green-600 font-medium';
+            
+            const updateDate = appData.version.lastUpdate ? 
+                new Date(appData.version.lastUpdate).toLocaleDateString('th-TH') : 
+                new Date().toLocaleDateString('th-TH');
+            versionDate.textContent = `อัปเดต ${updateDate}`;
         }
 
         function updateSecurityStatus() {
@@ -770,21 +885,75 @@
                 securityStatus.classList.add('text-gray-500');
                 securityStatus.classList.remove('text-green-600');
             }
+            
+            // Update button states based on verification
+            updateButtonStates();
+        }
+
+        function updateButtonStates() {
+            const isVerified = appData.security.verified && appData.security.faceData;
+            
+            // Get all buttons that require verification
+            const saveSavingBtn = document.getElementById('saveSavingBtn');
+            const setGoalBtn = document.getElementById('setGoalBtn');
+            const saveGoalBtn = document.getElementById('saveGoal');
+            const saveProfileBtn = document.getElementById('saveProfile');
+            
+            // Enable/disable buttons based on verification status
+            if (saveSavingBtn) {
+                saveSavingBtn.disabled = !isVerified;
+                if (!isVerified) {
+                    saveSavingBtn.title = 'กรุณายืนยันตัวตนก่อนใช้งาน';
+                } else {
+                    saveSavingBtn.title = '';
+                }
+            }
+            
+            if (setGoalBtn) {
+                setGoalBtn.disabled = !isVerified;
+                if (!isVerified) {
+                    setGoalBtn.title = 'กรุณายืนยันตัวตนก่อนใช้งาน';
+                } else {
+                    setGoalBtn.title = '';
+                }
+            }
+            
+            if (saveGoalBtn) {
+                saveGoalBtn.disabled = !isVerified;
+                if (!isVerified) {
+                    saveGoalBtn.title = 'กรุณายืนยันตัวตนก่อนใช้งาน';
+                } else {
+                    saveGoalBtn.title = '';
+                }
+            }
+            
+            if (saveProfileBtn) {
+                saveProfileBtn.disabled = !isVerified;
+                if (!isVerified) {
+                    saveProfileBtn.title = 'กรุณายืนยันตัวตนก่อนใช้งาน';
+                } else {
+                    saveProfileBtn.title = '';
+                }
+            }
         }
 
 
 
-        function handleThemeChange(e) {
-            const theme = e.target.value;
-            appData.settings.theme = theme;
-            localStorage.setItem('settings', JSON.stringify(appData.settings));
-            applyTheme(theme);
-        }
+
 
         function applyTheme(theme) {
             const body = document.body;
+            let actualTheme = theme;
             
-            if (theme === 'dark') {
+            // Auto theme based on time
+            if (theme === 'auto') {
+                const now = new Date();
+                const hour = now.getHours();
+                // Light theme: 9:00 - 19:00, Dark theme: 19:01 - 8:59
+                actualTheme = (hour >= 9 && hour <= 19) ? 'light' : 'dark';
+            }
+            
+            if (actualTheme === 'dark') {
                 body.classList.add('dark');
                 body.style.backgroundColor = '#1f2937';
                 
@@ -798,7 +967,7 @@
                 });
                 
                 textElements.forEach(el => {
-                    el.style.color = '#1f2937'; // Dark text color
+                    el.style.color = '#f9fafb';
                 });
                 
                 borderElements.forEach(el => {
@@ -829,6 +998,15 @@
                     el.style.color = '';
                     el.style.borderColor = '';
                 });
+            }
+            
+            // Auto-update theme every minute if auto mode is selected
+            if (theme === 'auto') {
+                setTimeout(() => {
+                    if (appData.settings.theme === 'auto') {
+                        applyTheme('auto');
+                    }
+                }, 60000);
             }
         }
 
@@ -899,6 +1077,7 @@
             
             // Update UI immediately
             updateSecurityStatus();
+            updateButtonStates();
             hideSecurityModal();
             showSuccessNotification('ยืนยันตัวตนสำเร็จ!');
             checkNotifications();
@@ -1004,6 +1183,7 @@
                     updateProfile();
                     loadSettings();
                     checkNotifications();
+                    updateButtonStates();
                     
                     showPage('dashboard');
                     updateNavigation(document.querySelector('[data-page="dashboard"]'));
@@ -1013,5 +1193,5 @@
             }
         }
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97e97310f4db7328',t:'MTc1Nzc4NTQzNC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97f075ac55114f58',t:'MTc1Nzg1ODk0MS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
