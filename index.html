@@ -23,73 +23,94 @@
 <body class="bg-gray-50 min-h-screen">
     <!-- Header -->
     <header class="bg-white shadow-sm border-b border-gray-200">
-        <div class="max-w-md mx-auto px-4 py-4 flex items-center justify-between">
-            <div class="flex items-center space-x-3">
-                <button id="menuToggleHeader" class="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center hover:bg-blue-700 transition-colors">
-                    <span class="material-icons text-white text-sm" id="menuIconHeader">menu</span>
-                </button>
-                <div class="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
-                    <span class="material-icons text-white text-sm">savings</span>
+        <div class="max-w-sm mx-auto px-4 py-3">
+            <div class="flex items-center justify-between mb-3">
+                <div class="flex items-center space-x-3">
+                    <div class="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
+                        <span class="material-icons text-white text-sm">savings</span>
+                    </div>
+                    <h1 class="text-lg font-semibold text-gray-900">Smart Saving</h1>
                 </div>
-                <h1 class="text-lg font-semibold text-gray-900">Smart Saving</h1>
+                <button id="settingsBtn" class="p-2 rounded-full hover:bg-gray-100">
+                    <span class="material-icons text-gray-600">settings</span>
+                </button>
             </div>
-            <button id="settingsBtn" class="flex items-center space-x-2 p-2 rounded-full hover:bg-gray-100">
-                <span class="material-icons text-gray-600">settings</span>
-                <span class="text-sm font-medium text-gray-600">ตั้งค่า</span>
-            </button>
+            
+            <!-- Navigation Menu Bar -->
+            <nav class="flex justify-center">
+                <div class="flex items-center space-x-1 bg-gray-100 rounded-full p-1 w-full max-w-sm">
+                    <button class="nav-btn flex-1 px-2 py-2 rounded-full text-xs font-medium transition-all duration-300 bg-blue-500 text-white flex flex-col items-center" data-page="dashboard">
+                        <span class="material-icons text-sm text-white">dashboard</span>
+                        <span class="text-xs mt-0.5 text-white" id="navDashboard">หลัก</span>
+                    </button>
+                    <button class="nav-btn flex-1 px-2 py-2 rounded-full text-xs font-medium transition-all duration-300 text-white hover:bg-white hover:text-gray-600 flex flex-col items-center" data-page="recent">
+                        <span class="material-icons text-sm">receipt_long</span>
+                        <span class="text-xs mt-0.5" id="navRecent">ล่าสุด</span>
+                    </button>
+                    <button class="nav-btn flex-1 px-2 py-2 rounded-full text-xs font-medium transition-all duration-300 text-white hover:bg-white hover:text-gray-600 flex flex-col items-center" data-page="addSavings">
+                        <span class="material-icons text-sm">add_circle</span>
+                        <span class="text-xs mt-0.5" id="navAdd">เพิ่ม</span>
+                    </button>
+                    <button class="nav-btn flex-1 px-2 py-2 rounded-full text-xs font-medium transition-all duration-300 text-white hover:bg-white hover:text-gray-600 flex flex-col items-center" data-page="categories">
+                        <span class="material-icons text-sm">category</span>
+                        <span class="text-xs mt-0.5" id="navCategories">หมวด</span>
+                    </button>
+                    <button class="nav-btn flex-1 px-2 py-2 rounded-full text-xs font-medium transition-all duration-300 text-white hover:bg-white hover:text-gray-600 flex flex-col items-center" data-page="history">
+                        <span class="material-icons text-sm">history</span>
+                        <span class="text-xs mt-0.5" id="navHistory">ประวัติ</span>
+                    </button>
+                </div>
+            </nav>
         </div>
     </header>
 
     <!-- Main Content -->
-    <main class="max-w-7xl mx-auto">
+    <main class="max-w-sm mx-auto">
         <!-- Dashboard -->
         <div id="dashboard" class="p-4 space-y-6">
-            <!-- Top Row: Total Savings and Monthly Goal -->
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <!-- Total Savings Card -->
-                <div class="bg-gradient-to-br from-indigo-600 via-purple-600 to-blue-700 rounded-3xl p-6 text-white shadow-2xl relative overflow-hidden">
-                    <div class="absolute top-0 right-0 w-24 h-24 bg-white opacity-10 rounded-full -translate-y-12 translate-x-12"></div>
-                    <div class="absolute bottom-0 left-0 w-20 h-20 bg-white opacity-5 rounded-full translate-y-10 -translate-x-10"></div>
-                    <div class="relative z-10">
-                        <div class="flex items-center justify-between mb-4">
-                            <h2 class="text-sm font-semibold opacity-90 tracking-wide uppercase" id="totalSavingsLabel">ยอดเงินออมทั้งหมด</h2>
-                            <div class="w-10 h-10 bg-white bg-opacity-20 rounded-xl flex items-center justify-center backdrop-blur-sm">
-                                <span class="material-icons text-white text-sm">account_balance_wallet</span>
-                            </div>
+            <!-- Total Savings Card -->
+            <div class="bg-gradient-to-br from-indigo-600 via-purple-600 to-blue-700 rounded-3xl p-6 text-white shadow-2xl relative overflow-hidden mb-6">
+                <div class="absolute top-0 right-0 w-24 h-24 bg-white opacity-10 rounded-full -translate-y-12 translate-x-12"></div>
+                <div class="absolute bottom-0 left-0 w-20 h-20 bg-white opacity-5 rounded-full translate-y-10 -translate-x-10"></div>
+                <div class="relative z-10">
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="text-sm font-semibold opacity-90 tracking-wide uppercase" id="totalSavingsLabel">ยอดเงินออมทั้งหมด</h2>
+                        <div class="w-10 h-10 bg-white bg-opacity-20 rounded-xl flex items-center justify-center backdrop-blur-sm">
+                            <span class="material-icons text-white text-sm">account_balance_wallet</span>
                         </div>
-                        <div class="text-3xl font-black mb-3 tracking-tight" id="totalSavings">฿0</div>
-                        <div class="flex items-center space-x-2">
-                            <div class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-                            <span class="text-sm font-medium opacity-90" id="liveStatusLabel">สดใหม่</span>
-                        </div>
+                    </div>
+                    <div class="text-3xl font-black mb-3 tracking-tight" id="totalSavings">฿0</div>
+                    <div class="flex items-center space-x-2">
+                        <div class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                        <span class="text-sm font-medium opacity-90" id="liveStatusLabel">สดใหม่</span>
                     </div>
                 </div>
+            </div>
 
-                <!-- Monthly Goal -->
-                <div class="bg-white rounded-2xl p-6 shadow-xl border-0 backdrop-blur-sm bg-opacity-95">
-                    <div class="flex items-center justify-between mb-4">
-                        <div class="flex items-center space-x-3">
-                            <div class="w-10 h-10 bg-gradient-to-r from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center">
-                                <span class="material-icons text-white text-sm">flag</span>
-                            </div>
-                            <h3 class="font-bold text-gray-900 text-lg" id="monthlyGoalLabel">เป้าหมายเดือนนี้</h3>
+            <!-- Monthly Goal -->
+            <div class="bg-white rounded-2xl p-6 shadow-xl border-0 backdrop-blur-sm bg-opacity-95 mb-6">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 bg-gradient-to-r from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center">
+                            <span class="material-icons text-white text-sm">flag</span>
                         </div>
-                        <button id="setGoalBtn" class="bg-gradient-to-r from-blue-500 to-indigo-600 text-white px-4 py-2 rounded-xl text-sm font-semibold shadow-lg hover:shadow-xl transition-all duration-300 disabled:from-gray-400 disabled:to-gray-500 disabled:cursor-not-allowed" id="setGoalBtnText">ตั้งเป้าหมาย</button>
+                        <h3 class="font-bold text-gray-900 text-lg" id="monthlyGoalLabel">เป้าหมายเดือนนี้</h3>
                     </div>
-                    <div class="space-y-4">
-                        <div class="flex justify-between text-sm">
-                            <span class="text-gray-600 font-medium" id="progressLabel">ความคืบหน้า</span>
-                            <span class="font-bold text-gray-900" id="goalProgress">฿0 / ฿0</span>
-                        </div>
-                        <div class="w-full bg-gray-200 rounded-full h-3 shadow-inner">
-                            <div id="progressBar" class="bg-gradient-to-r from-emerald-500 to-teal-600 h-3 rounded-full shadow-sm transition-all duration-500 ease-out" style="width: 0%"></div>
-                        </div>
+                    <button id="setGoalBtn" class="bg-gradient-to-r from-blue-500 to-indigo-600 text-white px-4 py-2 rounded-xl text-sm font-semibold shadow-lg hover:shadow-xl transition-all duration-300 disabled:from-gray-400 disabled:to-gray-500 disabled:cursor-not-allowed" id="setGoalBtnText">ตั้งเป้าหมาย</button>
+                </div>
+                <div class="space-y-4">
+                    <div class="flex justify-between text-sm">
+                        <span class="text-gray-600 font-medium" id="progressLabel">ความคืบหน้า</span>
+                        <span class="font-bold text-gray-900" id="goalProgress">฿0 / ฿0</span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-3 shadow-inner">
+                        <div id="progressBar" class="bg-gradient-to-r from-emerald-500 to-teal-600 h-3 rounded-full shadow-sm transition-all duration-500 ease-out" style="width: 0%"></div>
                     </div>
                 </div>
             </div>
 
             <!-- Quick Stats Row -->
-            <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            <div class="grid grid-cols-2 gap-4">
                 <div class="bg-gradient-to-br from-emerald-50 to-teal-50 rounded-2xl p-4 shadow-lg border border-emerald-100">
                     <div class="flex items-center space-x-3 mb-2">
                         <div class="w-10 h-10 bg-gradient-to-r from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center shadow-lg">
@@ -133,94 +154,84 @@
 
         <!-- Add Savings Form -->
         <div id="addSavings" class="hidden p-4">
-            <div class="max-w-4xl mx-auto">
-                <div class="bg-gradient-to-br from-white to-blue-50 rounded-3xl shadow-2xl border-0 p-8 backdrop-blur-sm">
-                    <div class="flex items-center space-x-4 mb-8">
-                        <div class="w-14 h-14 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center shadow-lg">
-                            <span class="material-icons text-white text-xl">add_circle</span>
-                        </div>
-                        <h2 class="text-2xl font-black text-gray-900" id="addSavingsTitle">เพิ่มการออม</h2>
+            <div class="bg-gradient-to-br from-white to-blue-50 rounded-3xl shadow-2xl border-0 p-6 backdrop-blur-sm">
+                <div class="flex items-center space-x-4 mb-6">
+                    <div class="w-12 h-12 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center shadow-lg">
+                        <span class="material-icons text-white">add_circle</span>
                     </div>
-                    <form id="savingsForm" class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                        <div class="space-y-2">
-                            <label class="block text-sm font-bold text-gray-800 mb-3" id="amountLabel">จำนวนเงิน (บาท)</label>
-                            <div class="relative">
-                                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                    <span class="text-gray-500 text-lg font-semibold">฿</span>
-                                </div>
-                                <input type="number" id="amount" class="w-full pl-10 pr-4 py-4 border-2 border-gray-200 rounded-2xl focus:ring-4 focus:ring-blue-200 focus:border-blue-500 transition-all duration-300 text-lg font-semibold bg-white shadow-inner" placeholder="0" required>
-                            </div>
-                        </div>
-                        <div class="space-y-2">
-                            <label class="block text-sm font-bold text-gray-800 mb-3" id="categoryLabel">หมวดหมู่</label>
-                            <select id="category" class="w-full px-4 py-4 border-2 border-gray-200 rounded-2xl focus:ring-4 focus:ring-blue-200 focus:border-blue-500 transition-all duration-300 text-lg font-semibold bg-white shadow-inner">
-                                <option value="daily" id="dailyOption">ค่าใช้จ่ายประจำวัน</option>
-                                <option value="emergency" id="emergencyOption">เงินฉุกเฉิน</option>
-                                <option value="travel" id="travelOption">ท่องเที่ยว</option>
-                                <option value="investment" id="investmentOption">การลงทุน</option>
-                            </select>
-                        </div>
-                        <div class="space-y-2">
-                            <label class="block text-sm font-bold text-gray-800 mb-3" id="dateLabel">วันที่</label>
-                            <input type="date" id="date" class="w-full px-4 py-4 border-2 border-gray-200 rounded-2xl focus:ring-4 focus:ring-blue-200 focus:border-blue-500 transition-all duration-300 text-lg font-semibold bg-white shadow-inner" required>
-                        </div>
-
-                        <div class="lg:col-span-3">
-                            <button type="submit" id="saveSavingBtn" class="w-full bg-gradient-to-r from-blue-600 to-indigo-700 text-white py-5 rounded-2xl font-black text-xl hover:from-blue-700 hover:to-indigo-800 transition-all duration-300 shadow-2xl hover:shadow-3xl mt-4 flex items-center justify-center space-x-3 disabled:from-gray-400 disabled:to-gray-500 disabled:cursor-not-allowed transform hover:scale-105">
-                                <span class="material-icons text-xl">save</span>
-                                <span id="saveBtnText">บันทึกการออม</span>
-                            </button>
-                        </div>
-                    </form>
+                    <h2 class="text-xl font-black text-black" id="addSavingsTitle">เพิ่มการออม</h2>
                 </div>
+                <form id="savingsForm" class="space-y-4">
+                    <div class="space-y-2">
+                        <label class="block text-sm font-bold text-black mb-2" id="amountLabel">จำนวนเงิน (บาท)</label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                <span class="text-gray-500 text-lg font-semibold">฿</span>
+                            </div>
+                            <input type="number" id="amount" class="w-full pl-10 pr-4 py-4 border-2 border-gray-200 rounded-2xl focus:ring-4 focus:ring-blue-200 focus:border-blue-500 transition-all duration-300 text-lg font-semibold bg-white shadow-inner" placeholder="0" required>
+                        </div>
+                    </div>
+                    <div class="space-y-2">
+                        <label class="block text-sm font-bold text-black mb-2" id="categoryLabel">หมวดหมู่</label>
+                        <select id="category" class="w-full px-4 py-4 border-2 border-gray-200 rounded-2xl focus:ring-4 focus:ring-blue-200 focus:border-blue-500 transition-all duration-300 text-lg font-semibold bg-white shadow-inner">
+                            <option value="daily" id="dailyOption">ค่าใช้จ่ายประจำวัน</option>
+                            <option value="emergency" id="emergencyOption">เงินฉุกเฉิน</option>
+                            <option value="travel" id="travelOption">ท่องเที่ยว</option>
+                            <option value="investment" id="investmentOption">การลงทุน</option>
+                        </select>
+                    </div>
+                    <div class="space-y-2">
+                        <label class="block text-sm font-bold text-black mb-2" id="dateLabel">วันที่</label>
+                        <input type="date" id="date" class="w-full px-4 py-4 border-2 border-gray-200 rounded-2xl focus:ring-4 focus:ring-blue-200 focus:border-blue-500 transition-all duration-300 text-lg font-semibold bg-white shadow-inner" required>
+                    </div>
+
+                    <button type="submit" id="saveSavingBtn" class="w-full bg-gradient-to-r from-blue-600 to-indigo-700 text-white py-4 rounded-2xl font-black text-lg hover:from-blue-700 hover:to-indigo-800 transition-all duration-300 shadow-2xl hover:shadow-3xl mt-6 flex items-center justify-center space-x-3 disabled:from-gray-400 disabled:to-gray-500 disabled:cursor-not-allowed transform hover:scale-105">
+                        <span class="material-icons">save</span>
+                        <span id="saveBtnText">บันทึกการออม</span>
+                    </button>
+                </form>
             </div>
         </div>
 
         <!-- Categories -->
         <div id="categories" class="hidden p-4">
-            <div class="max-w-6xl mx-auto">
-                <div class="bg-gradient-to-br from-white to-purple-50 rounded-3xl shadow-2xl border-0 overflow-hidden">
-                    <div class="bg-gradient-to-r from-purple-600 to-indigo-700 p-6">
-                        <div class="flex items-center space-x-4">
-                            <div class="w-12 h-12 bg-white bg-opacity-20 rounded-2xl flex items-center justify-center backdrop-blur-sm">
-                                <span class="material-icons text-white">category</span>
-                            </div>
-                            <h2 class="text-2xl font-black text-white" id="categoriesTitle">หมวดหมู่</h2>
+            <div class="bg-gradient-to-br from-white to-purple-50 rounded-3xl shadow-2xl border-0 overflow-hidden">
+                <div class="bg-gradient-to-r from-purple-600 to-indigo-700 p-6">
+                    <div class="flex items-center space-x-4">
+                        <div class="w-12 h-12 bg-white bg-opacity-20 rounded-2xl flex items-center justify-center backdrop-blur-sm">
+                            <span class="material-icons text-white">category</span>
                         </div>
+                        <h2 class="text-xl font-black text-white" id="categoriesTitle">หมวดหมู่</h2>
                     </div>
-                    <div id="categoryList" class="p-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                        <!-- Categories will be populated here -->
-                    </div>
+                </div>
+                <div id="categoryList" class="p-4 grid grid-cols-2 gap-4">
+                    <!-- Categories will be populated here -->
                 </div>
             </div>
         </div>
 
         <!-- Recent Transactions Page -->
         <div id="recent" class="hidden p-4">
-            <div class="max-w-6xl mx-auto">
-                <div class="bg-white rounded-xl shadow-sm border border-gray-100">
-                    <div class="p-4 border-b border-gray-100">
-                        <h2 class="text-lg font-semibold text-gray-900">รายการล่าสุด</h2>
-                    </div>
-                    <div id="recentTransactionsPage" class="max-h-96 overflow-y-auto p-2 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
-                        <!-- Recent transactions will be populated here -->
-                    </div>
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100">
+                <div class="p-4 border-b border-gray-100">
+                    <h2 class="text-lg font-semibold text-gray-900">รายการล่าสุด</h2>
+                </div>
+                <div id="recentTransactionsPage" class="max-h-96 overflow-y-auto p-2 space-y-2">
+                    <!-- Recent transactions will be populated here -->
                 </div>
             </div>
         </div>
 
         <!-- History -->
         <div id="history" class="hidden p-4">
-            <div class="max-w-6xl mx-auto">
-                <div class="bg-white rounded-xl shadow-sm border border-gray-100">
-                    <div class="p-4 border-b border-gray-100 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-                        <h2 class="text-lg font-semibold text-gray-900">ประวัติการออม</h2>
-                        <input type="text" id="searchHistory" class="lg:w-80 px-4 py-2 border border-gray-300 rounded-lg" placeholder="ค้นหาประวัติ...">
-                    </div>
-                    <div class="p-4">
-                        <div id="historyList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                            <!-- History items will be populated here -->
-                        </div>
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100">
+                <div class="p-4 border-b border-gray-100 space-y-4">
+                    <h2 class="text-lg font-semibold text-gray-900">ประวัติการออม</h2>
+                    <input type="text" id="searchHistory" class="w-full px-4 py-2 border border-gray-300 rounded-lg" placeholder="ค้นหาประวัติ...">
+                </div>
+                <div class="p-4">
+                    <div id="historyList" class="space-y-4">
+                        <!-- History items will be populated here -->
                     </div>
                 </div>
             </div>
@@ -286,12 +297,12 @@
                                 <span class="material-icons text-white text-sm">person</span>
                             </div>
                             <div class="text-left">
-                                <div class="font-semibold text-sm text-gray-900" id="settingsNickname">โปรไฟล์</div>
-                                <div class="text-xs text-gray-600" id="profileSubtext">จัดการข้อมูลส่วนตัว</div>
+                                <div class="font-semibold text-sm text-black" id="settingsNickname">โปรไฟล์</div>
+                                <div class="text-xs text-black" id="profileSubtext">จัดการข้อมูลส่วนตัว</div>
                             </div>
                         </div>
                         <div class="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center">
-                            <span class="material-icons text-gray-600 text-sm">chevron_right</span>
+                            <span class="material-icons text-black text-sm">chevron_right</span>
                         </div>
                     </button>
                     
@@ -301,8 +312,8 @@
                                 <span class="material-icons text-white text-sm">notifications</span>
                             </div>
                             <div>
-                                <div class="font-semibold text-sm text-gray-900" id="notificationTitle">การแจ้งเตือนอัตโนมัติ</div>
-                                <div class="text-xs text-gray-600" id="notificationSubtext">แจ้งเตือนเมื่อบันทึกสำเร็จ</div>
+                                <div class="font-semibold text-sm text-black" id="notificationTitle">การแจ้งเตือนอัตโนมัติ</div>
+                                <div class="text-xs text-black" id="notificationSubtext">แจ้งเตือนเมื่อบันทึกสำเร็จ</div>
                             </div>
                         </div>
                         <div class="px-2 py-1 bg-green-500 text-white rounded-full text-xs font-semibold" id="notificationStatus">เปิดใช้งาน</div>
@@ -314,8 +325,8 @@
                                 <span class="material-icons text-white text-sm">palette</span>
                             </div>
                             <div>
-                                <div class="font-semibold text-sm text-gray-900" id="themeTitle">ธีม</div>
-                                <div class="text-xs text-gray-600" id="themeSubtext">ปรับอัตโนมัติตามเวลา</div>
+                                <div class="font-semibold text-sm text-black" id="themeTitle">ธีม</div>
+                                <div class="text-xs text-black" id="themeSubtext">ปรับอัตโนมัติตามเวลา</div>
                             </div>
                         </div>
                         <div class="px-2 py-1 bg-blue-500 text-white rounded-full text-xs font-semibold" id="themeStatus">อัตโนมัติ</div>
@@ -327,37 +338,17 @@
                                 <span class="material-icons text-white text-sm">language</span>
                             </div>
                             <div>
-                                <div class="font-semibold text-sm text-gray-900" id="languageTitle">ภาษา</div>
-                                <div class="text-xs text-gray-600" id="languageSubtext">เลือกภาษาที่ต้องการ</div>
+                                <div class="font-semibold text-sm text-black" id="languageTitle">ภาษา</div>
+                                <div class="text-xs text-black" id="languageSubtext">เลือกภาษาที่ต้องการ</div>
                             </div>
                         </div>
                         <div class="flex space-x-1">
                             <button id="thaiLangBtn" class="px-3 py-1 bg-purple-500 text-white rounded-lg text-xs font-semibold transition-all duration-300 hover:bg-purple-600">ไทย</button>
-                            <button id="englishLangBtn" class="px-3 py-1 bg-gray-200 text-gray-700 rounded-lg text-xs font-semibold transition-all duration-300 hover:bg-gray-300">EN</button>
+                            <button id="englishLangBtn" class="px-3 py-1 bg-gray-200 text-black rounded-lg text-xs font-semibold transition-all duration-300 hover:bg-gray-300">EN</button>
                         </div>
                     </div>
                     
-                    <div class="p-3 flex items-center justify-between rounded-xl bg-teal-50 border border-teal-100">
-                        <div class="flex items-center space-x-3">
-                            <div class="w-10 h-10 bg-gradient-to-r from-teal-500 to-cyan-600 rounded-lg flex items-center justify-center">
-                                <span class="material-icons text-white text-sm">screen_rotation</span>
-                            </div>
-                            <div>
-                                <div class="font-semibold text-sm text-gray-900" id="orientationTitle">การหมุนหน้าจอ</div>
-                                <div class="text-xs text-gray-600" id="orientationSubtext">เลือกแนวการแสดงผล</div>
-                            </div>
-                        </div>
-                        <div class="flex space-x-1">
-                            <button id="portraitBtn" class="px-3 py-1 bg-teal-500 text-white rounded-lg text-xs font-semibold transition-all duration-300 hover:bg-teal-600 flex items-center space-x-1">
-                                <span class="material-icons text-xs">stay_current_portrait</span>
-                                <span>แนวตั้ง</span>
-                            </button>
-                            <button id="landscapeBtn" class="px-3 py-1 bg-gray-200 text-gray-700 rounded-lg text-xs font-semibold transition-all duration-300 hover:bg-gray-300 flex items-center space-x-1">
-                                <span class="material-icons text-xs">stay_current_landscape</span>
-                                <span>แนวนอน</span>
-                            </button>
-                        </div>
-                    </div>
+
                     
                     <button id="securityBtn" class="w-full p-3 text-left flex items-center justify-between hover:bg-orange-50 rounded-xl transition-all duration-300 border border-orange-100">
                         <div class="flex items-center space-x-3">
@@ -365,12 +356,12 @@
                                 <span class="material-icons text-white text-sm">security</span>
                             </div>
                             <div>
-                                <div class="font-semibold text-sm text-gray-900" id="securityTitle">ความปลอดภัย</div>
-                                <div class="text-xs text-gray-600" id="securityStatus">ยืนยันตัวตนด้วยการถ่ายหน้า</div>
+                                <div class="font-semibold text-sm text-black" id="securityTitle">ความปลอดภัย</div>
+                                <div class="text-xs text-black" id="securityStatus">ยืนยันตัวตนด้วยการถ่ายหน้า</div>
                             </div>
                         </div>
                         <div class="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center">
-                            <span class="material-icons text-gray-600 text-sm">chevron_right</span>
+                            <span class="material-icons text-black text-sm">chevron_right</span>
                         </div>
                     </button>
                     
@@ -380,13 +371,13 @@
                                 <span class="material-icons text-white text-sm">info</span>
                             </div>
                             <div>
-                                <div class="font-semibold text-sm text-gray-900" id="versionTitle">เวอร์ชัน</div>
-                                <div class="text-xs text-gray-600" id="versionText">Smart Saving App v4.5.0</div>
+                                <div class="font-semibold text-sm text-black" id="versionTitle">เวอร์ชัน</div>
+                                <div class="text-xs text-black" id="versionText">Smart Saving App v4.5.0</div>
                             </div>
                         </div>
                         <div class="text-right">
                             <div class="px-3 py-1 bg-green-500 text-white rounded-lg text-xs font-semibold" id="versionStatus">ล่าสุด</div>
-                            <div class="text-xs text-gray-500 mt-0.5" id="versionDate">อัปเดต 15 ธ.ค. 2024</div>
+                            <div class="text-xs text-black mt-0.5" id="versionDate">อัปเดต 15 ธ.ค. 2024</div>
                         </div>
                     </div>
 
@@ -394,7 +385,7 @@
                         <div class="w-10 h-10 bg-gradient-to-r from-red-500 to-pink-600 rounded-lg flex items-center justify-center">
                             <span class="material-icons text-white text-sm">restore</span>
                         </div>
-                        <span class="font-semibold text-sm" id="resetBtnText">รีเซ็ตข้อมูล (Factory Reset)</span>
+                        <span class="font-semibold text-sm text-black" id="resetBtnText">รีเซ็ตข้อมูล (Factory Reset)</span>
                     </button>
                 </div>
             </div>
@@ -437,7 +428,7 @@
         <div class="absolute inset-0 bg-black bg-opacity-30" id="menuBackdrop"></div>
         
         <!-- Menu Panel -->
-        <div class="absolute right-0 top-0 h-full w-80 bg-white shadow-xl border-l border-gray-200">
+        <div class="absolute right-0 top-0 h-full w-72 bg-white shadow-xl border-l border-gray-200">
             <!-- Menu Header -->
             <div class="bg-white p-6 border-b border-gray-100">
                 <div class="flex items-center justify-between">
@@ -454,54 +445,54 @@
             </div>
             
             <!-- Menu Items -->
-            <div class="p-3 space-y-1">
-                <button class="nav-btn w-full flex items-center space-x-4 p-3 text-left hover:bg-gray-100 rounded-lg transition-colors text-gray-700 bg-blue-50 border-l-4 border-blue-500" data-page="dashboard">
-                    <div class="w-9 h-9 flex items-center justify-center">
-                        <span class="material-icons text-blue-600 text-xl">dashboard</span>
+            <div class="p-2 space-y-1">
+                <button class="nav-btn w-full flex items-center space-x-3 p-3 text-left hover:bg-blue-50 rounded-xl transition-colors text-gray-700 bg-blue-50 border-l-4 border-blue-500" data-page="dashboard">
+                    <div class="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center">
+                        <span class="material-icons text-blue-600 text-lg">dashboard</span>
                     </div>
-                    <div>
-                        <div class="font-medium text-gray-900">แดชบอร์ด</div>
-                        <div class="text-xs text-gray-500">ภาพรวมการออม</div>
-                    </div>
-                </button>
-                
-                <button class="nav-btn w-full flex items-center space-x-4 p-3 text-left hover:bg-gray-100 rounded-lg transition-colors text-gray-700" data-page="recent">
-                    <div class="w-9 h-9 flex items-center justify-center">
-                        <span class="material-icons text-gray-600 text-xl">receipt_long</span>
-                    </div>
-                    <div>
-                        <div class="font-medium text-gray-900">รายการล่าสุด</div>
-                        <div class="text-xs text-gray-500">ดูรายการออมล่าสุด</div>
+                    <div class="flex-1 min-w-0">
+                        <div class="font-semibold text-blue-800 text-sm">แดชบอร์ด</div>
+                        <div class="text-xs text-blue-600 truncate">ภาพรวมการออม</div>
                     </div>
                 </button>
                 
-                <button class="nav-btn w-full flex items-center space-x-4 p-3 text-left hover:bg-gray-100 rounded-lg transition-colors text-gray-700" data-page="addSavings">
-                    <div class="w-9 h-9 flex items-center justify-center">
-                        <span class="material-icons text-gray-600 text-xl">add_circle</span>
+                <button class="nav-btn w-full flex items-center space-x-3 p-3 text-left hover:bg-green-50 rounded-xl transition-colors text-gray-700" data-page="recent">
+                    <div class="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center">
+                        <span class="material-icons text-green-600 text-lg">receipt_long</span>
                     </div>
-                    <div>
-                        <div class="font-medium text-gray-900">เพิ่มการออม</div>
-                        <div class="text-xs text-gray-500">บันทึกการออมใหม่</div>
-                    </div>
-                </button>
-                
-                <button class="nav-btn w-full flex items-center space-x-4 p-3 text-left hover:bg-gray-100 rounded-lg transition-colors text-gray-700" data-page="categories">
-                    <div class="w-9 h-9 flex items-center justify-center">
-                        <span class="material-icons text-gray-600 text-xl">category</span>
-                    </div>
-                    <div>
-                        <div class="font-medium text-gray-900">หมวดหมู่</div>
-                        <div class="text-xs text-gray-500">จัดกลุ่มการออม</div>
+                    <div class="flex-1 min-w-0">
+                        <div class="font-semibold text-gray-800 text-sm">รายการล่าสุด</div>
+                        <div class="text-xs text-gray-600 truncate">ดูรายการออมล่าสุด</div>
                     </div>
                 </button>
                 
-                <button class="nav-btn w-full flex items-center space-x-4 p-3 text-left hover:bg-gray-100 rounded-lg transition-colors text-gray-700" data-page="history">
-                    <div class="w-9 h-9 flex items-center justify-center">
-                        <span class="material-icons text-gray-600 text-xl">history</span>
+                <button class="nav-btn w-full flex items-center space-x-3 p-3 text-left hover:bg-orange-50 rounded-xl transition-colors text-gray-700" data-page="addSavings">
+                    <div class="w-10 h-10 bg-orange-100 rounded-xl flex items-center justify-center">
+                        <span class="material-icons text-orange-600 text-lg">add_circle</span>
                     </div>
-                    <div>
-                        <div class="font-medium text-gray-900">ประวัติ</div>
-                        <div class="text-xs text-gray-500">ประวัติการออมทั้งหมด</div>
+                    <div class="flex-1 min-w-0">
+                        <div class="font-semibold text-gray-800 text-sm">เพิ่มการออม</div>
+                        <div class="text-xs text-gray-600 truncate">บันทึกการออมใหม่</div>
+                    </div>
+                </button>
+                
+                <button class="nav-btn w-full flex items-center space-x-3 p-3 text-left hover:bg-red-50 rounded-xl transition-colors text-gray-700" data-page="categories">
+                    <div class="w-10 h-10 bg-red-100 rounded-xl flex items-center justify-center">
+                        <span class="material-icons text-red-600 text-lg">category</span>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <div class="font-semibold text-gray-800 text-sm">หมวดหมู่</div>
+                        <div class="text-xs text-gray-600 truncate">จัดกลุ่มการออม</div>
+                    </div>
+                </button>
+                
+                <button class="nav-btn w-full flex items-center space-x-3 p-3 text-left hover:bg-purple-50 rounded-xl transition-colors text-gray-700" data-page="history">
+                    <div class="w-10 h-10 bg-purple-100 rounded-xl flex items-center justify-center">
+                        <span class="material-icons text-purple-600 text-lg">history</span>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <div class="font-semibold text-gray-800 text-sm">ประวัติ</div>
+                        <div class="text-xs text-gray-600 truncate">ประวัติการออมทั้งหมด</div>
                     </div>
                 </button>
             </div>
@@ -609,10 +600,7 @@
                 security: 'ความปลอดภัย',
                 securitySubtext: 'ยืนยันตัวตนด้วยการถ่ายหน้า',
                 version: 'เวอร์ชัน',
-                orientation: 'การหมุนหน้าจอ',
-                orientationSubtext: 'เลือกแนวการแสดงผล',
-                portrait: 'แนวตั้ง',
-                landscape: 'แนวนอน',
+
                 factoryReset: 'รีเซ็ตข้อมูล (Factory Reset)',
                 
                 // Status
@@ -626,7 +614,14 @@
                 recent: 'รายการล่าสุด',
                 addSavingsNav: 'เพิ่มการออม',
                 categoriesNav: 'หมวดหมู่',
-                history: 'ประวัติ'
+                history: 'ประวัติ',
+                
+                // Menu Bar Navigation
+                navDashboard: 'หลัก',
+                navRecent: 'ล่าสุด',
+                navAdd: 'เพิ่ม',
+                navCategories: 'หมวด',
+                navHistory: 'ประวัติ'
             },
             en: {
                 // Header
@@ -669,10 +664,7 @@
                 security: 'Security',
                 securitySubtext: 'Face verification required',
                 version: 'Version',
-                orientation: 'Screen Orientation',
-                orientationSubtext: 'Select display orientation',
-                portrait: 'Portrait',
-                landscape: 'Landscape',
+
                 factoryReset: 'Factory Reset',
                 
                 // Status
@@ -686,7 +678,14 @@
                 recent: 'Recent',
                 addSavingsNav: 'Add Savings',
                 categoriesNav: 'Categories',
-                history: 'History'
+                history: 'History',
+                
+                // Menu Bar Navigation
+                navDashboard: 'Home',
+                navRecent: 'Recent',
+                navAdd: 'Add',
+                navCategories: 'Groups',
+                navHistory: 'History'
             }
         };
 
@@ -699,7 +698,6 @@
         document.addEventListener('DOMContentLoaded', function() {
             initializeApp();
             updateLanguageUI();
-            updateOrientationUI();
             updateAllTexts();
             updateDashboard();
             updateCategories();
@@ -716,8 +714,7 @@
         });
 
         function initializeApp() {
-            // Hamburger menu
-            document.getElementById('menuToggleHeader').addEventListener('click', toggleMenu);
+            // Slide menu controls
             document.getElementById('closeMenu').addEventListener('click', closeMenu);
             document.getElementById('menuBackdrop').addEventListener('click', closeMenu);
 
@@ -767,9 +764,7 @@
             document.getElementById('thaiLangBtn').addEventListener('click', () => changeLanguage('th'));
             document.getElementById('englishLangBtn').addEventListener('click', () => changeLanguage('en'));
 
-            // Orientation settings
-            document.getElementById('portraitBtn').addEventListener('click', () => changeOrientation('portrait'));
-            document.getElementById('landscapeBtn').addEventListener('click', () => changeOrientation('landscape'));
+
 
             // Notifications
             document.getElementById('closeNotification').addEventListener('click', hideNotification);
@@ -788,53 +783,115 @@
             document.getElementById(pageId).classList.remove('hidden');
         }
 
-        function toggleMenu() {
-            const slideMenu = document.getElementById('slideMenu');
-            const menuIconHeader = document.getElementById('menuIconHeader');
-            
-            if (slideMenu.classList.contains('translate-x-full')) {
-                // Open menu
-                slideMenu.classList.remove('translate-x-full');
-                slideMenu.classList.add('translate-x-0');
-                menuIconHeader.textContent = 'close';
-            } else {
-                // Close menu
-                slideMenu.classList.remove('translate-x-0');
-                slideMenu.classList.add('translate-x-full');
-                menuIconHeader.textContent = 'menu';
-            }
-        }
+
 
         function closeMenu() {
             const slideMenu = document.getElementById('slideMenu');
-            const menuIconHeader = document.getElementById('menuIconHeader');
-            
             slideMenu.classList.remove('translate-x-0');
             slideMenu.classList.add('translate-x-full');
-            menuIconHeader.textContent = 'menu';
         }
 
         function updateNavigation(activeBtn) {
-            document.querySelectorAll('.nav-btn').forEach(btn => {
-                btn.classList.remove('bg-blue-50', 'border-l-4', 'border-blue-500');
+            // Update header navigation buttons
+            document.querySelectorAll('nav .nav-btn').forEach(btn => {
+                btn.classList.remove('bg-blue-500', 'text-white');
+                btn.classList.add('text-white', 'hover:bg-white', 'hover:text-gray-600');
+                
+                // Reset icon and text colors
+                const icon = btn.querySelector('.material-icons');
+                const text = btn.querySelector('span:last-child');
+                if (icon) {
+                    icon.classList.remove('text-white');
+                    icon.classList.add('text-white');
+                }
+                if (text) {
+                    text.classList.remove('text-white');
+                    text.classList.add('text-white');
+                }
+            });
+            
+            // Update slide menu navigation buttons
+            document.querySelectorAll('#slideMenu .nav-btn').forEach(btn => {
+                btn.classList.remove('bg-blue-50', 'bg-green-50', 'bg-orange-50', 'bg-red-50', 'bg-purple-50', 'border-l-4', 'border-blue-500');
                 btn.classList.add('text-gray-700');
                 
-                // Reset icon colors
-                const icon = btn.querySelector('.material-icons');
-                if (icon) {
-                    icon.classList.remove('text-blue-600');
-                    icon.classList.add('text-gray-600');
+                // Reset text colors
+                const titleEl = btn.querySelector('div:last-child div:first-child');
+                const subtitleEl = btn.querySelector('div:last-child div:last-child');
+                if (titleEl) {
+                    titleEl.classList.remove('text-blue-800');
+                    titleEl.classList.add('text-gray-800');
+                }
+                if (subtitleEl) {
+                    subtitleEl.classList.remove('text-blue-600');
+                    subtitleEl.classList.add('text-gray-600');
                 }
             });
             
             if (activeBtn) {
-                activeBtn.classList.add('bg-blue-50', 'border-l-4', 'border-blue-500');
+                // Update header nav button if it's in the header
+                if (activeBtn.closest('nav')) {
+                    activeBtn.classList.remove('text-white', 'hover:bg-white', 'hover:text-gray-600');
+                    activeBtn.classList.add('bg-blue-500', 'text-white');
+                    
+                    // Ensure active button text is white
+                    const icon = activeBtn.querySelector('.material-icons');
+                    const text = activeBtn.querySelector('span:last-child');
+                    if (icon) {
+                        icon.classList.add('text-white');
+                    }
+                    if (text) {
+                        text.classList.add('text-white');
+                    }
+                }
                 
-                // Update icon colors for active button
-                const icon = activeBtn.querySelector('.material-icons');
-                if (icon) {
-                    icon.classList.remove('text-gray-600');
-                    icon.classList.add('text-blue-600');
+                // Update slide menu button if it's in the slide menu
+                if (activeBtn.closest('#slideMenu')) {
+                    activeBtn.classList.add('bg-blue-50', 'border-l-4', 'border-blue-500');
+                    
+                    // Update text colors for active button
+                    const titleEl = activeBtn.querySelector('div:last-child div:first-child');
+                    const subtitleEl = activeBtn.querySelector('div:last-child div:last-child');
+                    if (titleEl) {
+                        titleEl.classList.remove('text-gray-800');
+                        titleEl.classList.add('text-blue-800');
+                    }
+                    if (subtitleEl) {
+                        subtitleEl.classList.remove('text-gray-600');
+                        subtitleEl.classList.add('text-blue-600');
+                    }
+                }
+                
+                // Also update the corresponding button in the other navigation
+                const page = activeBtn.dataset.page;
+                const otherNavBtn = document.querySelector(activeBtn.closest('nav') ? `#slideMenu .nav-btn[data-page="${page}"]` : `nav .nav-btn[data-page="${page}"]`);
+                if (otherNavBtn) {
+                    if (otherNavBtn.closest('nav')) {
+                        otherNavBtn.classList.remove('text-white', 'hover:bg-white', 'hover:text-gray-600');
+                        otherNavBtn.classList.add('bg-blue-500', 'text-white');
+                        
+                        // Ensure active button text is white
+                        const icon = otherNavBtn.querySelector('.material-icons');
+                        const text = otherNavBtn.querySelector('span:last-child');
+                        if (icon) {
+                            icon.classList.add('text-white');
+                        }
+                        if (text) {
+                            text.classList.add('text-white');
+                        }
+                    } else {
+                        otherNavBtn.classList.add('bg-blue-50', 'border-l-4', 'border-blue-500');
+                        const titleEl = otherNavBtn.querySelector('div:last-child div:first-child');
+                        const subtitleEl = otherNavBtn.querySelector('div:last-child div:last-child');
+                        if (titleEl) {
+                            titleEl.classList.remove('text-gray-800');
+                            titleEl.classList.add('text-blue-800');
+                        }
+                        if (subtitleEl) {
+                            subtitleEl.classList.remove('text-gray-600');
+                            subtitleEl.classList.add('text-blue-600');
+                        }
+                    }
                 }
             }
         }
@@ -1210,16 +1267,8 @@
             settings.theme = 'auto';
             appData.settings.theme = 'auto';
             
-            // Set default orientation if not set
-            if (!settings.orientation) {
-                settings.orientation = 'portrait';
-                appData.settings.orientation = 'portrait';
-            }
-            
             localStorage.setItem('settings', JSON.stringify(appData.settings));
             applyTheme('auto');
-            applyOrientation(settings.orientation);
-            updateOrientationUI();
             
             // Update security status
             updateSecurityStatus();
@@ -1232,13 +1281,7 @@
             updateAllTexts();
         }
 
-        function changeOrientation(orientation) {
-            appData.settings.orientation = orientation;
-            localStorage.setItem('settings', JSON.stringify(appData.settings));
-            updateOrientationUI();
-            applyOrientation(orientation);
-            showSuccessNotification(orientation === 'portrait' ? 'เปลี่ยนเป็นแนวตั้งแล้ว' : 'เปลี่ยนเป็นแนวนอนแล้ว');
-        }
+
 
         function updateLanguageUI() {
             const thaiBtn = document.getElementById('thaiLangBtn');
@@ -1253,18 +1296,7 @@
             }
         }
 
-        function updateOrientationUI() {
-            const portraitBtn = document.getElementById('portraitBtn');
-            const landscapeBtn = document.getElementById('landscapeBtn');
-            
-            if (appData.settings.orientation === 'portrait') {
-                portraitBtn.className = 'px-3 py-1 bg-teal-500 text-white rounded-lg text-xs font-semibold transition-all duration-300 hover:bg-teal-600 flex items-center space-x-1';
-                landscapeBtn.className = 'px-3 py-1 bg-gray-200 text-gray-700 rounded-lg text-xs font-semibold transition-all duration-300 hover:bg-gray-300 flex items-center space-x-1';
-            } else {
-                portraitBtn.className = 'px-3 py-1 bg-gray-200 text-gray-700 rounded-lg text-xs font-semibold transition-all duration-300 hover:bg-gray-300 flex items-center space-x-1';
-                landscapeBtn.className = 'px-3 py-1 bg-teal-500 text-white rounded-lg text-xs font-semibold transition-all duration-300 hover:bg-teal-600 flex items-center space-x-1';
-            }
-        }
+
 
         function updateAllTexts() {
             const t = translations[appData.language];
@@ -1311,19 +1343,12 @@
             document.getElementById('themeSubtext').textContent = t.themeSubtext;
             document.getElementById('languageTitle').textContent = t.language;
             document.getElementById('languageSubtext').textContent = t.languageSubtext;
-            document.getElementById('orientationTitle').textContent = t.orientation;
-            document.getElementById('orientationSubtext').textContent = t.orientationSubtext;
+
             document.getElementById('securityTitle').textContent = t.security;
             document.getElementById('versionTitle').textContent = t.version;
             document.getElementById('resetBtnText').textContent = t.factoryReset;
             
-            // Update orientation button texts
-            const portraitBtn = document.getElementById('portraitBtn');
-            const landscapeBtn = document.getElementById('landscapeBtn');
-            if (portraitBtn && landscapeBtn) {
-                portraitBtn.querySelector('span:last-child').textContent = t.portrait;
-                landscapeBtn.querySelector('span:last-child').textContent = t.landscape;
-            }
+
             
             // Status texts
             document.getElementById('notificationStatus').textContent = t.enabled;
@@ -1332,21 +1357,28 @@
             
             // Update menu navigation texts
             updateMenuTexts();
+            updateNavBarTexts();
             
             // Update categories with new language
             updateCategories();
         }
 
         function updateMenuTexts() {
-            const t = translations[appData.language];
             const menuItems = document.querySelectorAll('#slideMenu .nav-btn');
+            const t = translations[appData.language];
             
-            const menuTexts = [
-                { title: t.dashboard, subtitle: t.language === 'th' ? 'ภาพรวมการออม' : 'Savings overview' },
-                { title: t.recent, subtitle: t.language === 'th' ? 'ดูรายการออมล่าสุด' : 'View recent savings' },
-                { title: t.addSavingsNav, subtitle: t.language === 'th' ? 'บันทึกการออมใหม่' : 'Record new savings' },
-                { title: t.categoriesNav, subtitle: t.language === 'th' ? 'จัดกลุ่มการออม' : 'Group savings' },
-                { title: t.history, subtitle: t.language === 'th' ? 'ประวัติการออมทั้งหมด' : 'All savings history' }
+            const menuTexts = appData.language === 'th' ? [
+                { title: 'แดชบอร์ด', subtitle: 'ภาพรวมการออม' },
+                { title: 'รายการล่าสุด', subtitle: 'ดูรายการออมล่าสุด' },
+                { title: 'เพิ่มการออม', subtitle: 'บันทึกการออมใหม่' },
+                { title: 'หมวดหมู่', subtitle: 'จัดกลุ่มการออม' },
+                { title: 'ประวัติ', subtitle: 'ประวัติการออมทั้งหมด' }
+            ] : [
+                { title: 'Dashboard', subtitle: 'Savings overview' },
+                { title: 'Recent', subtitle: 'View recent savings' },
+                { title: 'Add Savings', subtitle: 'Record new savings' },
+                { title: 'Categories', subtitle: 'Group savings' },
+                { title: 'History', subtitle: 'All savings history' }
             ];
             
             menuItems.forEach((item, index) => {
@@ -1357,6 +1389,17 @@
                     subtitleEl.textContent = menuTexts[index].subtitle;
                 }
             });
+        }
+
+        function updateNavBarTexts() {
+            const t = translations[appData.language];
+            
+            // Update navigation bar texts
+            document.getElementById('navDashboard').textContent = t.navDashboard;
+            document.getElementById('navRecent').textContent = t.navRecent;
+            document.getElementById('navAdd').textContent = t.navAdd;
+            document.getElementById('navCategories').textContent = t.navCategories;
+            document.getElementById('navHistory').textContent = t.navHistory;
         }
 
         function initVersionUpdate() {
@@ -1472,19 +1515,19 @@
             
             if (actualTheme === 'dark') {
                 body.classList.add('dark');
-                body.style.backgroundColor = '#1f2937';
+                body.style.backgroundColor = '#111827';
                 
                 // Apply dark theme to all white backgrounds and text
                 const whiteElements = document.querySelectorAll('.bg-white');
-                const textElements = document.querySelectorAll('.text-gray-900, .text-gray-800, .text-gray-700, .text-gray-600');
+                const textElements = document.querySelectorAll('.text-gray-900, .text-gray-800, .text-gray-700, .text-gray-600, .text-gray-500, .text-gray-400');
                 const borderElements = document.querySelectorAll('.border-gray-200, .border-gray-100');
                 
                 whiteElements.forEach(el => {
-                    el.style.backgroundColor = '#374151';
+                    el.style.backgroundColor = '#1f2937';
                 });
                 
                 textElements.forEach(el => {
-                    el.style.color = '#f9fafb';
+                    el.style.color = '#ffffff';
                 });
                 
                 borderElements.forEach(el => {
@@ -1494,26 +1537,31 @@
                 // Header and navigation
                 const header = document.querySelector('header');
                 if (header) {
-                    header.style.backgroundColor = '#374151';
-                    header.style.borderColor = '#4b5563';
+                    header.style.backgroundColor = '#1f2937';
+                    header.style.borderColor = '#374151';
                 }
                 
                 const nav = document.querySelector('nav');
                 if (nav) {
-                    nav.style.backgroundColor = '#374151';
-                    nav.style.borderColor = '#4b5563';
+                    nav.style.backgroundColor = '#1f2937';
+                    nav.style.borderColor = '#374151';
                 }
                 
             } else {
                 body.classList.remove('dark');
                 body.style.backgroundColor = '#f9fafb';
                 
-                // Reset all styles to default
+                // Reset all styles to default and set dark text for light theme
                 const allElements = document.querySelectorAll('*');
                 allElements.forEach(el => {
                     el.style.backgroundColor = '';
-                    el.style.color = '';
                     el.style.borderColor = '';
+                });
+                
+                // Set dark text for light theme
+                const textElements = document.querySelectorAll('.text-gray-900, .text-gray-800, .text-gray-700, .text-gray-600, .text-gray-500, .text-gray-400');
+                textElements.forEach(el => {
+                    el.style.color = '#1f2937';
                 });
             }
             
@@ -1527,73 +1575,7 @@
             }
         }
 
-        function applyOrientation(orientation) {
-            const body = document.body;
-            const main = document.querySelector('main');
-            
-            if (orientation === 'landscape') {
-                // Landscape mode - wider layout
-                body.style.transform = 'rotate(0deg)';
-                body.style.width = '100vw';
-                body.style.height = '100vh';
-                
-                if (main) {
-                    main.style.maxWidth = '100%';
-                    main.style.padding = '0 2rem';
-                }
-                
-                // Adjust header for landscape
-                const header = document.querySelector('header');
-                if (header) {
-                    header.querySelector('.max-w-md').classList.remove('max-w-md');
-                    header.querySelector('div').classList.add('max-w-full');
-                }
-                
-                // Adjust grid layouts for landscape
-                const dashboardGrids = document.querySelectorAll('.grid');
-                dashboardGrids.forEach(grid => {
-                    if (grid.classList.contains('grid-cols-1')) {
-                        grid.classList.remove('grid-cols-1');
-                        grid.classList.add('grid-cols-2');
-                    }
-                    if (grid.classList.contains('grid-cols-2')) {
-                        grid.classList.remove('grid-cols-2');
-                        grid.classList.add('grid-cols-4');
-                    }
-                });
-                
-            } else {
-                // Portrait mode - default mobile layout
-                body.style.transform = '';
-                body.style.width = '';
-                body.style.height = '';
-                
-                if (main) {
-                    main.style.maxWidth = '';
-                    main.style.padding = '';
-                }
-                
-                // Reset header for portrait
-                const header = document.querySelector('header');
-                if (header) {
-                    const headerDiv = header.querySelector('div');
-                    if (headerDiv) {
-                        headerDiv.classList.remove('max-w-full');
-                        headerDiv.classList.add('max-w-md');
-                    }
-                }
-                
-                // Reset grid layouts for portrait
-                const dashboardGrids = document.querySelectorAll('.grid');
-                dashboardGrids.forEach(grid => {
-                    if (grid.classList.contains('grid-cols-4')) {
-                        grid.classList.remove('grid-cols-4');
-                        grid.classList.add('grid-cols-2');
-                    }
-                    // Keep some grids as 2 columns in portrait for better mobile experience
-                });
-            }
-        }
+
 
         function showSecurityModal() {
             document.getElementById('securityModal').classList.remove('hidden');
@@ -1816,5 +1798,5 @@
             }
         }
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97f59e65f4c67329',t:'MTc1NzkxMzAzOC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97f9d632d4647323',t:'MTc1Nzk1NzI2Ni4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
