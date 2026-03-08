@@ -3,586 +3,524 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Smart Saving System - Beta Version</title>
+    <title>AI Smart Savings System 2026</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap');
-        
         body {
             font-family: 'Kanit', sans-serif;
-            background: #f0f2f5;
-            overflow-x: hidden;
+            background-color: #f0f4f8;
+            height: 100vh;
+            overflow: hidden;
         }
-
         .glass-morphism {
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.2);
-            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
         }
-
         .sidebar {
-            transition: all 0.3s ease;
-            width: 280px;
+            transition: transform 0.3s ease-in-out;
             z-index: 50;
         }
-
         .sidebar.closed {
             transform: translateX(-100%);
         }
-
         .main-content {
-            transition: all 0.3s ease;
+            height: calc(100vh - 64px);
+            overflow-y: auto;
         }
-
-        .saving-progress-circle {
-            transition: stroke-dashoffset 0.5s ease;
+        .hidden-section {
+            display: none;
         }
-
-        .btn-active { transform: scale(0.95); }
-
-        /* Animation for notifications */
-        @keyframes slideIn {
-            from { transform: translateY(100%); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
+        #lock-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #1a202c;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
         }
-        .notification-toast {
-            animation: slideIn 0.3s ease-out;
+        .status-dot {
+            height: 10px;
+            width: 10px;
+            border-radius: 50%;
+            display: inline-block;
         }
     </style>
 </head>
-<body class="bg-slate-50">
+<body class="bg-slate-100">
 
-    <!-- Sidebar Menu -->
-    <aside id="sidebar" class="sidebar fixed top-0 left-0 h-full bg-white shadow-xl border-r p-6 overflow-y-auto">
-        <div class="flex items-center justify-between mb-8">
-            <div class="flex items-center gap-3">
-                <div class="p-2 bg-indigo-100 rounded-lg">
-                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M19 18.5C19 19.8807 15.866 21 12 21C8.13401 21 5 19.8807 5 18.5V14.5C5 13.1193 8.13401 12 12 12C15.866 12 19 13.1193 19 14.5V18.5Z" stroke="#4F46E5" stroke-width="2"/>
-                        <path d="M19 9.5C19 10.8807 15.866 12 12 12C8.13401 12 5 10.8807 5 9.5V5.5C5 4.11929 8.13401 3 12 3C15.866 3 19 4.11929 19 5.5V9.5Z" stroke="#4F46E5" stroke-width="2"/>
-                        <path d="M19 14C19 15.3807 15.866 16.5 12 16.5C8.13401 16.5 5 15.3807 5 14" stroke="#4F46E5" stroke-width="2"/>
-                    </svg>
-                </div>
-                <h2 class="text-xl font-bold text-slate-800">Saving AI</h2>
-            </div>
-            <button onclick="toggleSidebar()" class="p-2 hover:bg-slate-100 rounded-full">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+    <!-- Lock Screen for Schedule -->
+    <div id="lock-screen" class="hidden">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-24 h-24 mb-6 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+        </svg>
+        <h1 class="text-3xl font-bold mb-2">ระบบกำลังเตรียมการอัปเดต</h1>
+        <p class="text-slate-400">จะเปิดใช้งานในวันที่ 08/03/2569 เวลา 13:00 น.</p>
+        <div id="countdown" class="mt-4 text-xl text-blue-400 font-mono"></div>
+    </div>
+
+    <!-- Navigation Bar -->
+    <nav class="bg-white shadow-md h-16 flex items-center justify-between px-6 sticky top-0 z-40">
+        <div class="flex items-center gap-4">
+            <button id="menu-toggle" class="p-2 hover:bg-slate-100 rounded-lg">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
             </button>
+            <div class="flex items-center gap-2">
+                <span class="text-3xl">🐷</span>
+                <span class="font-bold text-xl text-slate-800">SmartSave AI</span>
+            </div>
         </div>
-
-        <nav class="space-y-2">
-            <button onclick="showPage('home')" class="w-full flex items-center gap-4 p-3 rounded-xl hover:bg-indigo-50 text-slate-600 hover:text-indigo-600 transition-colors">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
-                <span>หน้าหลัก</span>
-            </button>
-            <button onclick="showPage('stats')" class="w-full flex items-center gap-4 p-3 rounded-xl hover:bg-indigo-50 text-slate-600 hover:text-indigo-600 transition-colors">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
-                <span>สถิติการออม</span>
-            </button>
-            <button onclick="showPage('goal')" class="w-full flex items-center gap-4 p-3 rounded-xl hover:bg-indigo-50 text-slate-600 hover:text-indigo-600 transition-colors">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
-                <span>เป้าหมาย</span>
-            </button>
-            <button onclick="showPage('history')" class="w-full flex items-center gap-4 p-3 rounded-xl hover:bg-indigo-50 text-slate-600 hover:text-indigo-600 transition-colors">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                <span>รายการล่าสุด</span>
-            </button>
-            <button onclick="showPage('settings')" class="w-full flex items-center gap-4 p-3 rounded-xl hover:bg-indigo-50 text-slate-600 hover:text-indigo-600 transition-colors">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-                <span>ตั้งค่า</span>
-            </button>
-        </nav>
-
-        <div class="mt-auto pt-10 border-t">
-            <div class="bg-indigo-600 rounded-2xl p-4 text-white text-center">
-                <p class="text-xs opacity-80 mb-1">สถานะระบบ</p>
-                <div id="statusIndicator" class="flex items-center justify-center gap-2 font-medium">
-                    <span class="w-2 h-2 rounded-full bg-green-400"></span>
-                    Online
-                </div>
+        
+        <div class="flex items-center gap-6">
+            <div class="text-right hidden md:block">
+                <p id="current-date" class="text-xs text-slate-500"></p>
+                <p id="current-time" class="text-sm font-semibold text-slate-700"></p>
             </div>
+            <div class="flex items-center gap-2 bg-slate-100 p-1 rounded-full px-3">
+                <span id="online-status-dot" class="status-dot bg-green-500"></span>
+                <button id="toggle-online" class="text-xs font-bold uppercase tracking-wider">Online</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Sidebar -->
+    <aside id="sidebar" class="sidebar closed fixed left-0 top-16 bottom-0 w-64 bg-white shadow-xl border-r border-slate-200">
+        <div class="p-4 space-y-2">
+            <button onclick="switchPage('home')" class="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-blue-50 text-slate-700 hover:text-blue-600 transition-colors">
+                <span class="text-xl">🏠</span> หน้าหลัก
+            </button>
+            <button onclick="switchPage('stats')" class="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-blue-50 text-slate-700 hover:text-blue-600 transition-colors">
+                <span class="text-xl">📊</span> สถิติการออม
+            </button>
+            <button onclick="switchPage('goal')" class="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-blue-50 text-slate-700 hover:text-blue-600 transition-colors">
+                <span class="text-xl">🎯</span> ตั้งเป้าหมาย
+            </button>
+            <button onclick="switchPage('history')" class="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-blue-50 text-slate-700 hover:text-blue-600 transition-colors">
+                <span class="text-xl">📜</span> รายการล่าสุด
+            </button>
+            <hr class="my-4">
+            <button onclick="switchPage('settings')" class="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-slate-50 text-slate-700 transition-colors">
+                <span class="text-xl">⚙️</span> ตั้งค่า
+            </button>
+            <button id="btn-delete-all" class="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-red-50 text-red-500 transition-colors">
+                <span class="text-xl">🗑️</span> ลบข้อมูลทั้งหมด
+            </button>
         </div>
     </aside>
 
-    <!-- Header Overlay -->
-    <header class="fixed top-0 left-0 right-0 h-16 bg-white/80 backdrop-blur-md border-b z-40 px-6 flex items-center justify-between">
-        <div class="flex items-center gap-4">
-            <button onclick="toggleSidebar()" class="p-2 hover:bg-slate-100 rounded-lg">
-                <svg class="w-6 h-6 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
-            </button>
-            <div class="hidden md:block">
-                <h1 class="font-semibold text-slate-800">AI Savings Tracker <span class="text-xs bg-indigo-100 text-indigo-600 px-2 py-1 rounded-full ml-2">Beta-Ai</span></h1>
-            </div>
-        </div>
-
-        <div class="flex items-center gap-4 text-right">
-            <div class="text-xs text-slate-500">
-                <p id="currentDate">--/--/----</p>
-                <p id="currentTime" class="font-bold text-slate-700">00:00:00</p>
-            </div>
-            <button id="systemToggle" onclick="toggleOnlineStatus()" class="px-4 py-2 rounded-full bg-green-500 text-white text-xs font-bold transition-all hover:bg-green-600">
-                ONLINE
-            </button>
-        </div>
-    </header>
-
-    <!-- Main Content Area -->
-    <main id="mainContainer" class="pt-20 pb-10 px-6 max-w-5xl mx-auto min-h-screen">
+    <!-- Main Content Container -->
+    <main class="main-content p-4 md:p-8">
         
-        <!-- Page: Home -->
-        <section id="page-home" class="space-y-6">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <!-- Balance Card -->
-                <div class="md:col-span-2 glass-morphism rounded-3xl p-8 relative overflow-hidden">
-                    <div class="relative z-10">
-                        <p class="text-slate-500 mb-2">เงินออมสะสมทั้งหมด</p>
-                        <h2 id="displayTotal" class="text-5xl font-bold text-slate-900 mb-6">฿ 0.00</h2>
-                        <div class="flex items-center gap-4">
-                            <div class="flex-1 h-3 bg-slate-100 rounded-full overflow-hidden">
-                                <div id="goalProgressBar" class="h-full bg-indigo-500 rounded-full transition-all duration-1000" style="width: 0%"></div>
-                            </div>
-                            <span id="goalPercentText" class="text-sm font-bold text-indigo-600">0%</span>
+        <!-- Notification Box -->
+        <div id="notification-container" class="fixed bottom-4 right-4 z-50 space-y-2 pointer-events-none"></div>
+
+        <!-- Section: Home -->
+        <section id="page-home" class="max-w-4xl mx-auto space-y-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="glass-morphism p-6 rounded-3xl shadow-sm border border-blue-100">
+                    <h2 class="text-lg text-slate-500 mb-1">ยอดเงินออมรวม</h2>
+                    <p id="display-total" class="text-4xl font-bold text-blue-600">0.00 ฿</p>
+                    <div class="mt-4">
+                        <div class="flex justify-between text-sm mb-1">
+                            <span>ความคืบหน้าเป้าหมาย</span>
+                            <span id="progress-percent">0%</span>
                         </div>
-                        <p class="text-xs text-slate-400 mt-2 italic">*ระบบจะรีเซ็ตเป้าหมายอัตโนมัติเมื่อครบ 100%</p>
-                    </div>
-                    <!-- Decor -->
-                    <div class="absolute -right-10 -bottom-10 opacity-10 pointer-events-none">
-                        <svg width="200" height="200" viewBox="0 0 24 24" fill="currentColor"><path d="M12,2C9.24,2,7,4.24,7,7V8H6C4.89,8,4,8.89,4,10V20C4,21.11,4.89,22,6,22H18C19.11,22,20,21.11,20,20V10C20,8.89,19.11,8,18,8H17V7C17,4.24,14.76,2,12,2M12,4C13.66,4,15,5.34,15,7V8H9V7C9,5.34,10.34,4,12,4M12,13A2,2 0 0,1 14,15A2,2 0 0,1 12,17A2,2 0 0,1 10,15A2,2 0 0,1 12,13Z"/></svg>
-                    </div>
-                </div>
-
-                <!-- Input Card -->
-                <div class="bg-white rounded-3xl p-6 border shadow-sm">
-                    <h3 class="font-bold text-slate-800 mb-4 flex items-center gap-2">
-                        <svg class="w-5 h-5 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
-                        บันทึกการออม
-                    </h3>
-                    <div class="space-y-4">
-                        <div class="grid grid-cols-3 gap-2">
-                            <button onclick="quickAdd(20)" class="quick-btn p-2 rounded-xl border hover:border-indigo-400 hover:bg-indigo-50 text-slate-600 transition-all">฿20</button>
-                            <button onclick="quickAdd(50)" class="quick-btn p-2 rounded-xl border hover:border-indigo-400 hover:bg-indigo-50 text-slate-600 transition-all">฿50</button>
-                            <button onclick="quickAdd(100)" class="quick-btn p-2 rounded-xl border hover:border-indigo-400 hover:bg-indigo-50 text-slate-600 transition-all">฿100</button>
+                        <div class="w-full bg-slate-200 rounded-full h-2.5">
+                            <div id="progress-bar" class="bg-blue-600 h-2.5 rounded-full transition-all duration-1000" style="width: 0%"></div>
                         </div>
-                        <input type="number" id="saveInput" placeholder="จำนวนเงินอื่นๆ" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all">
-                        <button onclick="handleSave()" id="btnSave" class="w-full bg-indigo-600 text-white py-4 rounded-xl font-bold hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-200">
-                            บันทึกตอนนี้
-                        </button>
                     </div>
                 </div>
+
+                <div class="glass-morphism p-6 rounded-3xl shadow-sm border border-green-100">
+                    <h2 class="text-lg text-slate-500 mb-1">เป้าหมายปัจจุบัน</h2>
+                    <p id="display-goal-name" class="text-2xl font-bold text-slate-800">ยังไม่ตั้งเป้าหมาย</p>
+                    <p id="display-goal-amount" class="text-lg text-green-600 font-semibold">0.00 ฿</p>
+                </div>
             </div>
 
-            <!-- Recent Summary -->
-            <div class="bg-white rounded-3xl border shadow-sm overflow-hidden">
-                <div class="p-6 border-b flex justify-between items-center">
-                    <h3 class="font-bold text-slate-800">รายการล่าสุด</h3>
-                    <span class="text-xs text-slate-400">ประวัติจะถูกล้างทุกๆ 1 นาทีอัตโนมัติ</span>
+            <div class="bg-white p-8 rounded-3xl shadow-sm border border-slate-100">
+                <h3 class="text-xl font-bold mb-6 flex items-center gap-2">
+                    <span class="p-2 bg-blue-100 rounded-lg">💰</span> บันทึกการออมใหม่
+                </h3>
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+                    <button onclick="quickAdd(20)" class="quick-btn p-4 rounded-2xl bg-slate-50 border border-slate-200 hover:border-blue-400 hover:bg-blue-50 transition-all font-bold">20 ฿</button>
+                    <button onclick="quickAdd(50)" class="quick-btn p-4 rounded-2xl bg-slate-50 border border-slate-200 hover:border-blue-400 hover:bg-blue-50 transition-all font-bold">50 ฿</button>
+                    <button onclick="quickAdd(100)" class="quick-btn p-4 rounded-2xl bg-slate-50 border border-slate-200 hover:border-blue-400 hover:bg-blue-50 transition-all font-bold">100 ฿</button>
+                    <button onclick="quickAdd(500)" class="quick-btn p-4 rounded-2xl bg-slate-50 border border-slate-200 hover:border-blue-400 hover:bg-blue-50 transition-all font-bold">500 ฿</button>
                 </div>
-                <div id="historyListHome" class="divide-y max-h-60 overflow-y-auto">
-                    <!-- List Items -->
-                </div>
-            </div>
-        </section>
-
-        <!-- Page: Stats -->
-        <section id="page-stats" class="hidden space-y-6">
-            <div class="bg-white rounded-3xl p-8 border shadow-sm">
-                <h3 class="text-xl font-bold text-slate-800 mb-6">กราฟสถิติการออม (รายวัน)</h3>
-                <div class="relative h-64 w-full">
-                    <canvas id="savingChart"></canvas>
-                </div>
-            </div>
-        </section>
-
-        <!-- Page: Goal -->
-        <section id="page-goal" class="hidden space-y-6">
-            <div class="bg-white rounded-3xl p-8 border shadow-sm text-center">
-                <div class="inline-block p-4 bg-yellow-100 rounded-full mb-4">
-                    <svg class="w-12 h-12 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                </div>
-                <h3 class="text-2xl font-bold text-slate-800 mb-2">เป้าหมายปัจจุบัน</h3>
-                <p class="text-slate-500 mb-6">เป้าหมายถัดไปของคนเก่ง</p>
-                <div class="text-4xl font-bold text-indigo-600 mb-8">฿ <span id="currentGoalValueDisplay">1,000</span></div>
-                <button onclick="showPage('settings')" class="px-8 py-3 bg-slate-100 text-slate-600 rounded-full hover:bg-slate-200 font-medium">เปลี่ยนเป้าหมายในตั้งค่า</button>
-            </div>
-        </section>
-
-        <!-- Page: History -->
-        <section id="page-history" class="hidden space-y-6">
-            <div class="bg-white rounded-3xl border shadow-sm overflow-hidden">
-                <div class="p-6 bg-slate-50 border-b flex justify-between items-center">
-                    <h3 class="font-bold text-slate-800">ประวัติการออมทั้งหมด (1 นาที)</h3>
-                    <button onclick="confirmClearAll()" class="text-red-500 text-sm font-medium hover:underline">ล้างข้อมูลทั้งหมด</button>
-                </div>
-                <div id="fullHistoryList" class="divide-y h-96 overflow-y-auto">
-                    <!-- History content -->
+                <div class="flex flex-col md:flex-row gap-4">
+                    <input type="number" id="input-amount" placeholder="ระบุจำนวนเงินอื่นๆ" class="flex-1 p-4 rounded-2xl bg-slate-50 border border-slate-200 outline-none focus:ring-2 focus:ring-blue-500">
+                    <button id="btn-save" class="bg-blue-600 text-white px-8 py-4 rounded-2xl font-bold hover:bg-blue-700 transition-all shadow-lg shadow-blue-200">บันทึกการออม</button>
                 </div>
             </div>
         </section>
 
-        <!-- Page: Settings -->
-        <section id="page-settings" class="hidden space-y-6">
-            <div class="bg-white rounded-3xl p-8 border shadow-sm">
-                <h3 class="text-xl font-bold text-slate-800 mb-6">การตั้งค่าระบบ</h3>
-                <div class="space-y-6">
+        <!-- Section: Stats -->
+        <section id="page-stats" class="max-w-4xl mx-auto hidden-section">
+            <div class="bg-white p-6 rounded-3xl shadow-sm">
+                <h3 class="text-xl font-bold mb-6">สถิติการออมรายสัปดาห์</h3>
+                <div class="h-64 md:h-80">
+                    <canvas id="savingsChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section: Goal -->
+        <section id="page-goal" class="max-w-xl mx-auto hidden-section">
+            <div class="bg-white p-8 rounded-3xl shadow-sm">
+                <h3 class="text-xl font-bold mb-6">ตั้งเป้าหมายการออม</h3>
+                <div class="space-y-4">
                     <div>
-                        <label class="block text-sm font-medium text-slate-600 mb-2">เป้าหมายการออม (บาท)</label>
-                        <input type="number" id="goalInput" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500/20 outline-none">
+                        <label class="block text-sm text-slate-500 mb-1">ชื่อเป้าหมาย</label>
+                        <input type="text" id="input-goal-name" class="w-full p-4 rounded-xl bg-slate-50 border border-slate-200">
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-slate-600 mb-2">แก้ไขเงินสะสมปัจจุบัน (บาท)</label>
-                        <input type="number" id="currentBalanceEdit" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500/20 outline-none">
+                        <label class="block text-sm text-slate-500 mb-1">จำนวนเงินที่ต้องการ</label>
+                        <input type="number" id="input-goal-amount" class="w-full p-4 rounded-xl bg-slate-50 border border-slate-200">
                     </div>
-                    <button onclick="saveSettings()" class="w-full bg-slate-900 text-white py-4 rounded-xl font-bold hover:bg-slate-800 transition-all">บันทึกการตั้งค่า</button>
+                    <button id="btn-set-goal" class="w-full bg-slate-800 text-white p-4 rounded-xl font-bold hover:bg-black transition-all">บันทึกเป้าหมาย</button>
                 </div>
             </div>
         </section>
 
+        <!-- Section: History -->
+        <section id="page-history" class="max-w-2xl mx-auto hidden-section">
+            <div class="bg-white p-6 rounded-3xl shadow-sm min-h-[400px]">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-xl font-bold">รายการล่าสุด</h3>
+                    <span class="text-xs text-slate-400">รายการจะถูกล้างอัตโนมัติภายใน 1 นาที</span>
+                </div>
+                <div id="history-list" class="space-y-3">
+                    <!-- History items will appear here -->
+                    <p class="text-center text-slate-400 py-10">ไม่มีประวัติรายการ</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section: Settings -->
+        <section id="page-settings" class="max-w-xl mx-auto hidden-section">
+            <div class="bg-white p-8 rounded-3xl shadow-sm">
+                <h3 class="text-xl font-bold mb-6 text-red-600">แก้ไขข้อมูลการเงิน (โหมดผู้ดูแล)</h3>
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm text-slate-500 mb-1">ยอดเงินออมรวม (แก้ไขโดยตรง)</label>
+                        <input type="number" id="edit-total-amount" class="w-full p-4 rounded-xl bg-slate-50 border border-red-100">
+                    </div>
+                    <button id="btn-update-settings" class="w-full bg-red-600 text-white p-4 rounded-xl font-bold hover:bg-red-700 transition-all">อัปเดตข้อมูล</button>
+                </div>
+            </div>
+        </section>
     </main>
 
-    <!-- Notification Area -->
-    <div id="toastContainer" class="fixed bottom-6 right-6 z-[100] space-y-3 pointer-events-none"></div>
-
-    <!-- AI Overlay (Processing) -->
-    <div id="aiOverlay" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[99] flex items-center justify-center hidden">
-        <div class="bg-white rounded-3xl p-8 text-center max-w-xs shadow-2xl">
-            <div class="mb-4">
-                <svg class="w-16 h-16 text-indigo-600 animate-spin mx-auto" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-            </div>
-            <h4 class="font-bold text-xl mb-2 text-indigo-600">AI กำลังทำงาน</h4>
-            <p class="text-slate-500 text-sm">ออมครบตามเป้าหมายแล้ว! ระบบกำลังคำนวณเป้าหมายถัดไปใน 10 วินาที...</p>
-        </div>
-    </div>
-
-    <!-- Modals -->
-    <div id="deleteModal" class="fixed inset-0 bg-black/50 z-[110] hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-3xl p-8 max-w-sm w-full shadow-2xl">
-            <h3 class="text-xl font-bold text-slate-900 mb-2">ยืนยันการลบ?</h3>
-            <p class="text-slate-500 mb-6">ข้อมูลทั้งหมดรวมถึงประวัติจะถูกลบออกถาวรภายใน 1 นาทีหลังจากนี้</p>
-            <div class="flex gap-3">
-                <button onclick="closeModal('deleteModal')" class="flex-1 py-3 rounded-xl font-medium border text-slate-600">ยกเลิก</button>
-                <button onclick="executeFullDelete()" class="flex-1 py-3 rounded-xl font-bold bg-red-500 text-white shadow-lg shadow-red-200">ยืนยันลบ</button>
-            </div>
-        </div>
-    </div>
-
     <script>
-        // State Management
+        // --- Configuration & State ---
         let state = {
-            total: 0,
-            goal: 1000,
-            history: [],
+            totalSaved: 0,
+            goalName: "เป้าหมายใหม่",
+            goalAmount: 1000,
             isOnline: true,
-            currentView: 'home',
-            lastResetTime: Date.now()
+            history: [], // [{id, amount, timestamp}]
+            lastUpdated: null
         };
 
+        const APP_ID = 'smart-save-ai-v1';
+        const RELEASE_DATE = new Date('2026-03-08T13:00:00');
         let chart = null;
 
-        // Initialize App
+        // --- Core Functions ---
+
         function init() {
-            loadFromStorage();
+            loadData();
+            checkLockStatus();
             updateUI();
-            updateClock();
-            setInterval(updateClock, 1000);
-            setInterval(autoCleanHistory, 10000); // Check for history cleaning every 10s
+            startClock();
+            setupEventListeners();
+            initChart();
             
-            // Initial Chart Load
-            renderChart();
-
-            // Set default values in settings
-            document.getElementById('goalInput').value = state.goal;
-            document.getElementById('currentBalanceEdit').value = state.total;
+            // Auto clean history every 60 seconds
+            setInterval(autoCleanHistory, 60000);
         }
 
-        // Clock & Date
-        function updateClock() {
+        function checkLockStatus() {
             const now = new Date();
-            const dateStr = now.toLocaleDateString('th-TH', { day: '2-digit', month: '2-digit', year: 'numeric' });
-            const timeStr = now.toLocaleTimeString('th-TH', { hour12: false });
-            
-            document.getElementById('currentDate').innerText = dateStr;
-            document.getElementById('currentTime').innerText = timeStr;
+            const lockScreen = document.getElementById('lock-screen');
+            const countdownEl = document.getElementById('countdown');
+
+            if (now < RELEASE_DATE) {
+                lockScreen.classList.remove('hidden');
+                const timer = setInterval(() => {
+                    const current = new Date();
+                    const diff = RELEASE_DATE - current;
+                    if (diff <= 0) {
+                        lockScreen.classList.add('hidden');
+                        clearInterval(timer);
+                        notify("🔓 ระบบเปิดใช้งานแล้ว!", "success");
+                    } else {
+                        const hours = Math.floor(diff / 3600000);
+                        const mins = Math.floor((diff % 3600000) / 60000);
+                        const secs = Math.floor((diff % 60000) / 1000);
+                        countdownEl.innerText = `เปิดใช้งานในอีก ${hours}ชม. ${mins}นาที ${secs}วินาที`;
+                    }
+                }, 1000);
+            }
         }
 
-        // LocalStorage Logic (F5/Reload Persistent)
-        function saveToStorage() {
-            localStorage.setItem('saving_ai_state', JSON.stringify(state));
-        }
-
-        function loadFromStorage() {
-            const saved = localStorage.getItem('saving_ai_state');
+        function loadData() {
+            const saved = localStorage.getItem(APP_ID);
             if (saved) {
                 const parsed = JSON.parse(saved);
                 state = { ...state, ...parsed };
-                
-                // Keep history only if not expired (1 min rule)
-                const now = Date.now();
-                state.history = state.history.filter(h => now - h.timestamp < 60000);
+                // Keep online status as stored
+                updateOnlineUI();
             }
         }
 
-        // Page Navigation
-        function showPage(pageId) {
-            const pages = ['home', 'stats', 'goal', 'history', 'settings'];
-            pages.forEach(p => {
-                document.getElementById(`page-${p}`).classList.add('hidden');
-            });
-            document.getElementById(`page-${pageId}`).classList.remove('hidden');
-            state.currentView = pageId;
-            
-            if (pageId === 'stats') {
-                setTimeout(renderChart, 50);
-            }
-            if (window.innerWidth < 768) toggleSidebar(true);
+        function saveData() {
+            localStorage.setItem(APP_ID, JSON.stringify(state));
         }
 
-        function toggleSidebar(forceClose = false) {
-            const sb = document.getElementById('sidebar');
-            if (forceClose) {
-                sb.classList.add('closed');
-            } else {
-                sb.classList.toggle('closed');
-            }
-        }
+        function updateUI() {
+            document.getElementById('display-total').innerText = `${state.totalSaved.toLocaleString()} ฿`;
+            document.getElementById('display-goal-name').innerText = state.goalName;
+            document.getElementById('display-goal-amount').innerText = `เป้าหมาย: ${state.goalAmount.toLocaleString()} ฿`;
+            document.getElementById('edit-total-amount').value = state.totalSaved;
 
-        // Online/Offline Logic
-        function toggleOnlineStatus() {
-            state.isOnline = !state.isOnline;
-            const btn = document.getElementById('systemToggle');
-            const indicator = document.getElementById('statusIndicator');
-            
-            if (state.isOnline) {
-                btn.innerText = 'ONLINE';
-                btn.className = 'px-4 py-2 rounded-full bg-green-500 text-white text-xs font-bold transition-all';
-                indicator.innerHTML = '<span class="w-2 h-2 rounded-full bg-green-400"></span> Online';
-                showToast('ระบบออนไลน์แล้ว พร้อมบันทึกข้อมูล', 'success');
-            } else {
-                btn.innerText = 'OFFLINE';
-                btn.className = 'px-4 py-2 rounded-full bg-slate-500 text-white text-xs font-bold transition-all';
-                indicator.innerHTML = '<span class="w-2 h-2 rounded-full bg-slate-400"></span> Offline';
-                showToast('ระบบออฟไลน์ บันทึกข้อมูลไม่ได้ชั่วคราว', 'warning');
-            }
-            saveToStorage();
-        }
+            const percent = Math.min(100, (state.totalSaved / state.goalAmount) * 100) || 0;
+            document.getElementById('progress-bar').style.width = `${percent}%`;
+            document.getElementById('progress-percent').innerText = `${percent.toFixed(1)}%`;
 
-        // Saving Actions
-        function quickAdd(amount) {
-            document.getElementById('saveInput').value = amount;
-            handleSave();
-        }
+            renderHistory();
+            updateChart();
 
-        function handleSave() {
-            if (!state.isOnline) {
-                showToast('ไม่สามารถบันทึกได้ขณะระบบ Offline', 'error');
-                return;
-            }
-
-            const input = document.getElementById('saveInput');
-            const amount = parseFloat(input.value);
-
-            if (isNaN(amount) || amount <= 0) {
-                showToast('กรุณาระบุจำนวนเงินที่ถูกต้อง', 'warning');
-                return;
-            }
-
-            // Update State
-            state.total += amount;
-            const entry = {
-                id: Date.now(),
-                amount: amount,
-                timestamp: Date.now(),
-                timeStr: new Date().toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' })
-            };
-            state.history.unshift(entry);
-            
-            input.value = '';
-            showToast(`บันทึกแล้ว +฿${amount}`, 'success');
-            
-            checkGoalCompletion();
-            updateUI();
-            saveToStorage();
-        }
-
-        // AI Logic: Automatic Goal Update
-        function checkGoalCompletion() {
-            if (state.total >= state.goal) {
-                document.getElementById('aiOverlay').classList.remove('hidden');
-                
-                // Disable everything
-                state.isOnline = false;
-                
-                setTimeout(() => {
-                    const surplus = state.total - state.goal;
-                    // AI calculates next goal (e.g., current goal + 50%)
-                    const newGoal = state.goal + Math.ceil(state.goal * 0.5);
-                    
-                    state.goal = newGoal;
-                    state.total = surplus; // Move surplus to next goal
-                    
-                    document.getElementById('aiOverlay').classList.add('hidden');
-                    state.isOnline = true;
-                    showToast('AI: อัพเดตเป้าหมายใหม่เรียบร้อยแล้ว!', 'success');
-                    
-                    updateUI();
-                    saveToStorage();
-                }, 10000); // 10 seconds AI delay
+            // AI Logic: Auto Update Goal if 100%
+            if (percent >= 100) {
+                triggerAIGoalUpdate();
             }
         }
 
-        // Auto Clean History (1 minute rule)
-        function autoCleanHistory() {
-            const now = Date.now();
-            const initialCount = state.history.length;
-            state.history = state.history.filter(h => now - h.timestamp < 60000);
-            
-            if (initialCount !== state.history.length) {
-                updateUI();
-                saveToStorage();
-            }
-        }
-
-        // Full Data Reset (1 minute delayed execution simulation)
-        function confirmClearAll() {
-            document.getElementById('deleteModal').classList.remove('hidden');
-        }
-
-        function closeModal(id) {
-            document.getElementById(id).classList.add('hidden');
-        }
-
-        function executeFullDelete() {
-            closeModal('deleteModal');
-            showToast('ระบบกำลังเตรียมการลบข้อมูลทั้งหมดใน 1 นาที...', 'warning');
+        let aiUpdating = false;
+        function triggerAIGoalUpdate() {
+            if (aiUpdating) return;
+            aiUpdating = true;
+            notify("🎯 ถึงเป้าหมายแล้ว! AI กำลังคำนวณเป้าหมายถัดไปใน 10 วินาที...", "info");
             
             setTimeout(() => {
-                state.total = 0;
-                state.history = [];
-                state.goal = 1000;
-                saveToStorage();
+                const nextGoalAmount = state.goalAmount * 1.5;
+                state.goalAmount = Math.round(nextGoalAmount / 100) * 100;
+                state.goalName = `เป้าหมายระดับถัดไป`;
+                aiUpdating = false;
+                saveData();
                 updateUI();
-                showToast('ลบข้อมูลถาวรเรียบร้อยแล้ว', 'error');
-            }, 60000); // 1 minute delete
+                notify("🤖 AI อัปเดตเป้าหมายใหม่ให้คุณแล้ว!", "success");
+            }, 10000);
         }
 
-        // Settings
-        function saveSettings() {
-            const g = parseFloat(document.getElementById('goalInput').value);
-            const b = parseFloat(document.getElementById('currentBalanceEdit').value);
-            
-            if (g > 0) state.goal = g;
-            if (!isNaN(b)) state.total = b;
-            
-            saveToStorage();
-            updateUI();
-            showToast('บันทึกการตั้งค่าเรียบร้อย', 'success');
-            showPage('home');
-        }
+        function renderHistory() {
+            const container = document.getElementById('history-list');
+            if (state.history.length === 0) {
+                container.innerHTML = '<p class="text-center text-slate-400 py-10">ไม่มีประวัติรายการ</p>';
+                return;
+            }
 
-        // UI Rendering
-        function updateUI() {
-            // Display Total
-            document.getElementById('displayTotal').innerText = `฿ ${state.total.toLocaleString(undefined, { minimumFractionDigits: 2 })}`;
-            
-            // Progress Bar
-            const percent = Math.min((state.total / state.goal) * 100, 100);
-            document.getElementById('goalProgressBar').style.width = `${percent}%`;
-            document.getElementById('goalPercentText').innerText = `${Math.floor(percent)}%`;
-            
-            // Goal Display
-            document.getElementById('currentGoalValueDisplay').innerText = state.goal.toLocaleString();
-            
-            // History Lists
-            renderHistoryList();
-            
-            // Sync Settings Input
-            document.getElementById('currentBalanceEdit').value = state.total;
-        }
-
-        function renderHistoryList() {
-            const hListHome = document.getElementById('historyListHome');
-            const hListFull = document.getElementById('fullHistoryList');
-            
-            const html = state.history.length === 0 
-                ? '<div class="p-8 text-center text-slate-400 text-sm">ไม่มีประวัติรายการ</div>'
-                : state.history.map(h => `
-                    <div class="p-4 flex items-center justify-between hover:bg-slate-50 transition-colors">
-                        <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center text-green-600 font-bold">฿</div>
-                            <div>
-                                <p class="text-sm font-bold text-slate-800">+${h.amount}</p>
-                                <p class="text-[10px] text-slate-400">เมื่อเวลา ${h.timeStr}</p>
-                            </div>
+            container.innerHTML = state.history.map(item => `
+                <div class="flex justify-between items-center p-4 bg-slate-50 rounded-2xl border border-slate-100 animate-fade-in">
+                    <div class="flex items-center gap-3">
+                        <div class="p-2 bg-green-100 text-green-600 rounded-full text-xs">➕</div>
+                        <div>
+                            <p class="font-bold text-slate-800">+${item.amount} ฿</p>
+                            <p class="text-[10px] text-slate-400">${item.time}</p>
                         </div>
-                        <span class="text-[10px] px-2 py-1 bg-slate-100 text-slate-500 rounded-lg">ล่าสุด</span>
                     </div>
-                `).join('');
-            
-            hListHome.innerHTML = html;
-            hListFull.innerHTML = html;
+                </div>
+            `).join('');
         }
 
-        function renderChart() {
-            const ctx = document.getElementById('savingChart').getContext('2d');
+        function autoCleanHistory() {
+            // Simple logic: If we are here, clear history (since history only lasts 1 min as per request)
+            if (state.history.length > 0) {
+                state.history = [];
+                saveData();
+                renderHistory();
+                console.log("History cleared automatically (1-min cycle)");
+            }
+        }
+
+        function quickAdd(val) {
+            if (!state.isOnline) {
+                notify("❌ ระบบอยู่ในโหมด Offline ไม่สามารถบันทึกได้", "error");
+                return;
+            }
+            addSavings(val);
+        }
+
+        function addSavings(amount) {
+            if (isNaN(amount) || amount <= 0) return;
             
-            // Mock data based on history or daily accumulation
-            const labels = ['จันทร์', 'อังคาร', 'พุธ', 'พฤหัส', 'ศุกร์', 'เสาร์', 'อาทิตย์'];
-            const data = [120, 250, 400, state.total > 0 ? state.total : 150, 180, 90, 300];
+            state.totalSaved += parseFloat(amount);
+            const now = new Date();
+            state.history.unshift({
+                id: Date.now(),
+                amount: amount,
+                time: now.toLocaleTimeString()
+            });
 
-            if (chart) chart.destroy();
+            // Keep only latest items
+            if (state.history.length > 10) state.history.pop();
 
+            saveData();
+            updateUI();
+            notify(`💰 บันทึกการออม +${amount} ฿ สำเร็จ`, "success");
+        }
+
+        function switchPage(pageId) {
+            document.querySelectorAll('main section').forEach(s => s.classList.add('hidden-section'));
+            document.getElementById(`page-${pageId}`).classList.remove('hidden-section');
+            document.getElementById('sidebar').classList.add('closed');
+        }
+
+        function startClock() {
+            const updateClock = () => {
+                const now = new Date();
+                document.getElementById('current-date').innerText = now.toLocaleDateString('th-TH', { 
+                    year: 'numeric', month: 'long', day: 'numeric' 
+                });
+                document.getElementById('current-time').innerText = now.toLocaleTimeString('th-TH');
+            };
+            updateClock();
+            setInterval(updateClock, 1000);
+        }
+
+        function updateOnlineUI() {
+            const btn = document.getElementById('toggle-online');
+            const dot = document.getElementById('online-status-dot');
+            if (state.isOnline) {
+                btn.innerText = "Online";
+                dot.classList.remove('bg-slate-400');
+                dot.classList.add('bg-green-500');
+            } else {
+                btn.innerText = "Offline";
+                dot.classList.remove('bg-green-500');
+                dot.classList.add('bg-slate-400');
+            }
+        }
+
+        function notify(msg, type = "info") {
+            const container = document.getElementById('notification-container');
+            const el = document.createElement('div');
+            el.className = `p-4 rounded-2xl shadow-xl text-white font-medium flex items-center gap-3 transition-all duration-300 pointer-events-auto transform translate-y-10 opacity-0`;
+            
+            const colors = {
+                success: 'bg-green-500',
+                error: 'bg-red-500',
+                info: 'bg-blue-600'
+            };
+            el.classList.add(colors[type] || colors.info);
+            el.innerHTML = `<span>🔔</span> ${msg}`;
+            
+            container.appendChild(el);
+            setTimeout(() => {
+                el.classList.remove('translate-y-10', 'opacity-0');
+            }, 10);
+
+            setTimeout(() => {
+                el.classList.add('opacity-0');
+                setTimeout(() => el.remove(), 500);
+            }, 3000);
+        }
+
+        function initChart() {
+            const ctx = document.getElementById('savingsChart').getContext('2d');
             chart = new Chart(ctx, {
                 type: 'bar',
                 data: {
-                    labels: labels,
+                    labels: ['อา.', 'จ.', 'อ.', 'พ.', 'พฤ.', 'ศ.', 'ส.'],
                     datasets: [{
-                        label: 'จำนวนเงินออม',
-                        data: data,
-                        backgroundColor: '#6366f1',
-                        borderRadius: 8,
-                        barThickness: 24
+                        label: 'ยอดออมสะสม',
+                        data: [0, 0, 0, 0, 0, 0, state.totalSaved],
+                        backgroundColor: '#3b82f6',
+                        borderRadius: 8
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    plugins: {
-                        legend: { display: false }
-                    },
-                    scales: {
-                        y: { beginAtZero: true, grid: { display: false } },
-                        x: { grid: { display: false } }
-                    }
+                    plugins: { legend: { display: false } },
+                    scales: { y: { beginAtZero: true } }
                 }
             });
         }
 
-        function showToast(msg, type = 'info') {
-            const container = document.getElementById('toastContainer');
-            const toast = document.createElement('div');
-            
-            const colors = {
-                success: 'bg-green-600',
-                warning: 'bg-yellow-500',
-                error: 'bg-red-500',
-                info: 'bg-indigo-600'
-            };
-
-            toast.className = `notification-toast pointer-events-auto ${colors[type]} text-white px-6 py-3 rounded-2xl shadow-xl flex items-center gap-3 min-w-[200px]`;
-            toast.innerHTML = `
-                <span class="text-sm font-medium">${msg}</span>
-            `;
-            
-            container.appendChild(toast);
-            setTimeout(() => {
-                toast.style.opacity = '0';
-                toast.style.transform = 'translateY(20px)';
-                setTimeout(() => toast.remove(), 300);
-            }, 3000);
+        function updateChart() {
+            if (!chart) return;
+            const todayIdx = new Date().getDay();
+            chart.data.datasets[0].data[todayIdx] = state.totalSaved;
+            chart.update();
         }
 
-        // Initialize on Load
+        function setupEventListeners() {
+            document.getElementById('menu-toggle').addEventListener('click', () => {
+                document.getElementById('sidebar').classList.toggle('closed');
+            });
+
+            document.getElementById('toggle-online').addEventListener('click', () => {
+                state.isOnline = !state.isOnline;
+                saveData();
+                updateOnlineUI();
+                notify(state.isOnline ? "🌐 กลับเข้าสู่ระบบออนไลน์" : "📴 ตัดการเชื่อมต่อระบบ");
+            });
+
+            document.getElementById('btn-save').addEventListener('click', () => {
+                if (!state.isOnline) {
+                    notify("❌ ไม่สามารถบันทึกได้ในโหมด Offline", "error");
+                    return;
+                }
+                const input = document.getElementById('input-amount');
+                addSavings(parseFloat(input.value));
+                input.value = '';
+            });
+
+            document.getElementById('btn-set-goal').addEventListener('click', () => {
+                if (!state.isOnline) return notify("❌ ระบบ Offline", "error");
+                const name = document.getElementById('input-goal-name').value;
+                const amt = document.getElementById('input-goal-amount').value;
+                if (name && amt > 0) {
+                    state.goalName = name;
+                    state.goalAmount = parseFloat(amt);
+                    saveData();
+                    updateUI();
+                    switchPage('home');
+                    notify("🎯 ตั้งเป้าหมายใหม่สำเร็จ", "success");
+                }
+            });
+
+            document.getElementById('btn-update-settings').addEventListener('click', () => {
+                const newTotal = document.getElementById('edit-total-amount').value;
+                state.totalSaved = parseFloat(newTotal) || 0;
+                saveData();
+                updateUI();
+                notify("⚙️ อัปเดตยอดเงินคงเหลือเรียบร้อย", "info");
+            });
+
+            document.getElementById('btn-delete-all').addEventListener('click', () => {
+                notify("⚠️ ข้อมูลทั้งหมดจะถูกลบถาวรใน 1 นาที...", "error");
+                setTimeout(() => {
+                    localStorage.removeItem(APP_ID);
+                    location.reload();
+                }, 60000);
+            });
+        }
+
+        // Run on load
         window.onload = init;
     </script>
 </body>
