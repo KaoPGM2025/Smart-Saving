@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NovaSavePash + Meta AI v8.9 Stable</title>
+    <title>NovaSavePash + Meta AI v9.1 Stable</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -14,7 +14,7 @@
             --primary: #00f2ff;
             --secondary: #7000ff;
             --bg-dark: #020617;
-            --card-bg: rgba(15, 23, 42, 0.75);
+            --card-bg: rgba(15, 23, 42, 0.7);
         }
 
         body {
@@ -31,33 +31,36 @@
 
         .glass-card {
             background: var(--card-bg);
-            backdrop-filter: blur(25px);
+            backdrop-filter: blur(20px);
             border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 2rem;
-            transition: all 0.3s ease;
+            border-radius: 1.5rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        /* Notification v8.9 Stable */
+        /* Stable Notification Stack */
         #notificationStack {
             position: fixed;
-            top: 90px;
+            top: 20px;
             right: 20px;
-            z-index: 9999;
+            z-index: 10000;
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 12px;
             pointer-events: none;
         }
 
         .toast-item {
             pointer-events: auto;
-            min-width: 280px;
+            width: 300px;
             background: rgba(15, 23, 42, 0.95);
-            border-left: 4px solid var(--primary);
-            padding: 14px 20px;
+            border-left: 5px solid var(--primary);
+            padding: 16px;
             border-radius: 12px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            animation: slideIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.6);
+            animation: slideIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+            display: flex;
+            align-items: center;
+            gap: 12px;
         }
 
         @keyframes slideIn {
@@ -68,31 +71,31 @@
         .nav-active {
             color: var(--primary) !important;
             background: rgba(0, 242, 255, 0.1);
+            border: 1px solid rgba(0, 242, 255, 0.2);
         }
 
-        .rank-card-active {
-            border: 2px solid var(--primary);
-            box-shadow: 0 0 20px rgba(0, 242, 255, 0.2);
-            transform: scale(1.02);
+        .rank-glow {
+            box-shadow: 0 0 20px var(--rank-color);
+            border: 2px solid var(--rank-color);
         }
 
         .page-section {
-            animation: pageFade 0.4s ease-out;
+            animation: fadeIn 0.4s ease-out;
         }
 
-        @keyframes pageFade {
-            from { opacity: 0; transform: translateY(5px); }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
-        .pocket-card {
-            background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.01) 100%);
-            border: 1px solid rgba(255,255,255,0.05);
+        /* Responsive UI Scaling */
+        @media (min-width: 1024px) {
+            .main-grid { grid-template-columns: repeat(12, 1fr); }
         }
 
         input:disabled, button:disabled {
-            opacity: 0.4;
-            cursor: not-allowed;
+            opacity: 0.3;
+            cursor: not-allowed !important;
         }
     </style>
 </head>
@@ -100,62 +103,62 @@
 
     <div id="notificationStack"></div>
 
-    <!-- Enhanced Menu Bar v8.9 -->
-    <header class="fixed top-0 left-0 w-full h-20 flex justify-between items-center px-4 md:px-10 z-[8000] bg-slate-950/90 border-b border-white/5 backdrop-blur-xl">
+    <!-- UI Menu Bar v9.1 -->
+    <header class="fixed top-0 left-0 w-full h-20 flex justify-between items-center px-4 md:px-8 z-[9000] bg-slate-950/80 border-b border-white/5 backdrop-blur-xl">
         <div class="flex items-center gap-3 cursor-pointer" onclick="toggleSidebar()">
-            <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-cyan-400 to-blue-600 flex items-center justify-center">
-                <i class="fas fa-brain text-white"></i>
+            <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500 to-purple-600 flex items-center justify-center shadow-lg shadow-cyan-500/20">
+                <i class="fas fa-atom text-white"></i>
             </div>
             <div>
-                <h1 class="text-sm md:text-base font-black tracking-tighter uppercase">NovaSave<span class="text-cyan-400">Pash</span></h1>
-                <p id="liveClock" class="text-[9px] text-gray-500 font-bold tracking-widest uppercase">14/03/2569 | 00:00:00</p>
+                <h1 class="text-base font-black tracking-tighter uppercase leading-none">NovaSave<span class="text-cyan-400">Pash</span></h1>
+                <p id="liveTime" class="text-[9px] text-gray-500 font-bold tracking-widest uppercase mt-1">15/03/2569 | 00:00:00</p>
             </div>
         </div>
 
-        <nav class="hidden lg:flex items-center gap-1 bg-slate-900/50 p-1 rounded-xl border border-white/5">
-            <button onclick="showPage('home')" id="btn-home" class="nav-btn nav-active px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all">Dashboard</button>
-            <button onclick="showPage('pocket')" id="btn-pocket" class="nav-btn px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-white transition-all">Cloud Pocket</button>
-            <button onclick="showPage('stats')" id="btn-stats" class="nav-btn px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-white transition-all">Analytics</button>
-            <button onclick="showPage('rank')" id="btn-rank" class="nav-btn px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-white transition-all">Military Rank</button>
-            <button onclick="showPage('settings')" id="btn-settings" class="nav-btn px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-white transition-all">Kernel</button>
+        <nav class="hidden lg:flex items-center gap-1 bg-slate-900/40 p-1 rounded-xl border border-white/5">
+            <button onclick="showPage('home')" id="nav-home" class="nav-btn nav-active px-5 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all">Core</button>
+            <button onclick="showPage('pocket')" id="nav-pocket" class="nav-btn px-5 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-white transition-all">Pockets</button>
+            <button onclick="showPage('stats')" id="nav-stats" class="nav-btn px-5 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-white transition-all">Charts</button>
+            <button onclick="showPage('rank')" id="nav-rank" class="nav-btn px-5 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-white transition-all">Ranks</button>
+            <button onclick="showPage('settings')" id="nav-settings" class="nav-btn px-5 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-white transition-all">System</button>
         </nav>
 
         <div class="flex items-center gap-4">
             <div class="flex flex-col items-end">
-                <span id="greetingText" class="text-[10px] font-bold text-cyan-400 uppercase tracking-tighter">สวัสดีตอนเช้า</span>
+                <span id="dayGreeting" class="text-[10px] font-bold text-cyan-400 uppercase tracking-tighter italic">กำลังโหลด...</span>
                 <div class="flex items-center gap-2 bg-slate-900 border border-white/10 px-3 py-1 rounded-full">
-                    <span id="connLabel" class="text-[8px] font-black uppercase">Online</span>
-                    <div id="connDot" class="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]"></div>
+                    <span id="statusText" class="text-[8px] font-black uppercase">Online</span>
+                    <div id="statusDot" class="w-1.5 h-1.5 rounded-full bg-emerald-500"></div>
                 </div>
             </div>
-            <button onclick="toggleConnection()" id="powerBtn" class="w-8 h-8 flex items-center justify-center rounded-full bg-slate-800 text-gray-400 hover:text-white text-xs transition-all">
+            <button onclick="toggleSystemPower()" id="powerBtn" class="w-9 h-9 flex items-center justify-center rounded-full bg-slate-800 text-gray-400 hover:text-white transition-all active:scale-90">
                 <i class="fas fa-power-off"></i>
             </button>
         </div>
     </header>
 
     <!-- Sidebar Mobile -->
-    <nav id="sidebar" class="fixed top-0 left-0 h-full w-64 bg-slate-950 border-r border-white/5 pt-24 px-6 z-[7999] -translate-x-full transition-transform duration-300">
-        <div class="space-y-1">
-            <button onclick="showPage('home')" class="w-full flex items-center gap-4 p-4 hover:bg-white/5 rounded-xl transition-all group text-left">
-                <i class="fas fa-home text-gray-500 group-hover:text-cyan-400 w-5"></i>
-                <span class="font-bold text-xs uppercase tracking-widest text-white">Dashboard</span>
+    <nav id="mobileSidebar" class="fixed top-0 left-0 h-full w-64 bg-slate-950 border-r border-white/5 pt-24 px-6 z-[8999] -translate-x-full transition-transform duration-300 shadow-2xl">
+        <div class="space-y-2">
+            <button onclick="showPage('home')" class="w-full flex items-center gap-4 p-4 hover:bg-white/5 rounded-xl transition-all group">
+                <i class="fas fa-th-large text-gray-500 group-hover:text-cyan-400"></i>
+                <span class="font-bold text-xs uppercase tracking-widest">Dashboard</span>
             </button>
-            <button onclick="showPage('pocket')" class="w-full flex items-center gap-4 p-4 hover:bg-white/5 rounded-xl transition-all group text-left">
-                <i class="fas fa-wallet text-gray-500 group-hover:text-cyan-400 w-5"></i>
-                <span class="font-bold text-xs uppercase tracking-widest text-white">Cloud Pocket</span>
+            <button onclick="showPage('pocket')" class="w-full flex items-center gap-4 p-4 hover:bg-white/5 rounded-xl transition-all group">
+                <i class="fas fa-wallet text-gray-500 group-hover:text-cyan-400"></i>
+                <span class="font-bold text-xs uppercase tracking-widest">Cloud Pocket</span>
             </button>
-            <button onclick="showPage('stats')" class="w-full flex items-center gap-4 p-4 hover:bg-white/5 rounded-xl transition-all group text-left">
-                <i class="fas fa-chart-bar text-gray-500 group-hover:text-cyan-400 w-5"></i>
-                <span class="font-bold text-xs uppercase tracking-widest text-white">Analytics</span>
+            <button onclick="showPage('stats')" class="w-full flex items-center gap-4 p-4 hover:bg-white/5 rounded-xl transition-all group">
+                <i class="fas fa-chart-line text-gray-500 group-hover:text-cyan-400"></i>
+                <span class="font-bold text-xs uppercase tracking-widest">Analytics</span>
             </button>
-            <button onclick="showPage('rank')" class="w-full flex items-center gap-4 p-4 hover:bg-white/5 rounded-xl transition-all group text-left">
-                <i class="fas fa-medal text-gray-500 group-hover:text-cyan-400 w-5"></i>
-                <span class="font-bold text-xs uppercase tracking-widest text-white">Rank System</span>
+            <button onclick="showPage('rank')" class="w-full flex items-center gap-4 p-4 hover:bg-white/5 rounded-xl transition-all group">
+                <i class="fas fa-shield-alt text-gray-500 group-hover:text-cyan-400"></i>
+                <span class="font-bold text-xs uppercase tracking-widest">Rank System</span>
             </button>
-            <button onclick="showPage('settings')" class="w-full flex items-center gap-4 p-4 hover:bg-white/5 rounded-xl transition-all group text-left">
-                <i class="fas fa-cog text-gray-500 group-hover:text-cyan-400 w-5"></i>
-                <span class="font-bold text-xs uppercase tracking-widest text-white">Kernel Settings</span>
+            <button onclick="showPage('settings')" class="w-full flex items-center gap-4 p-4 hover:bg-white/5 rounded-xl transition-all group">
+                <i class="fas fa-microchip text-gray-500 group-hover:text-cyan-400"></i>
+                <span class="font-bold text-xs uppercase tracking-widest">Kernel Settings</span>
             </button>
         </div>
     </nav>
@@ -163,188 +166,216 @@
     <!-- Main Content -->
     <main class="max-w-6xl mx-auto px-4 mt-28 pb-10">
         
-        <!-- Dashboard Home -->
+        <!-- Page: Home -->
         <section id="page-home" class="page-section">
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                
-                <!-- Main Balance -->
-                <div class="lg:col-span-8 glass-card p-8 md:p-12 flex flex-col justify-between min-h-[300px]">
+                <!-- Main Balance v9.1 -->
+                <div class="lg:col-span-8 glass-card p-10 flex flex-col justify-between min-h-[320px] relative overflow-hidden">
+                    <div class="absolute top-0 right-0 p-8 opacity-5 text-9xl"><i class="fas fa-piggy-bank"></i></div>
+                    <div class="relative z-10">
+                        <div class="flex justify-between items-center mb-4">
+                            <span class="text-[10px] font-black text-gray-500 uppercase tracking-[0.4em]">Total Asset Storage</span>
+                            <div id="badgeRank" class="px-4 py-1.5 bg-cyan-500/10 border border-cyan-500/20 rounded-full text-[10px] font-black uppercase text-cyan-400">Bronze I</div>
+                        </div>
+                        <h2 id="displayTotal" class="text-6xl md:text-7xl font-black tracking-tighter">฿ 0.00</h2>
+                    </div>
+                    
+                    <div class="mt-12 relative z-10">
+                        <div class="flex justify-between items-end mb-3">
+                            <div class="flex flex-col">
+                                <span class="text-[9px] font-black text-gray-500 uppercase">Growth Rate</span>
+                                <span id="displayPercent" class="text-3xl font-black text-cyan-400">0%</span>
+                            </div>
+                            <span id="displayGoal" class="text-[10px] font-black text-white bg-slate-800 px-3 py-1 rounded-md uppercase">Target: ฿ 0</span>
+                        </div>
+                        <div class="w-full h-3 bg-slate-950 rounded-full p-0.5 border border-white/5">
+                            <div id="mainProgress" class="h-full bg-gradient-to-r from-cyan-500 via-blue-500 to-purple-600 rounded-full transition-all duration-1000 shadow-[0_0_15px_rgba(6,182,212,0.4)]" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- AI Analyst v9.1 -->
+                <div class="lg:col-span-4 glass-card p-8 flex flex-col justify-between border-t-2 border-cyan-500/30">
                     <div>
-                        <div class="flex justify-between items-center mb-6">
-                            <span class="text-[10px] font-black text-gray-500 uppercase tracking-[0.3em]">Capital Storage</span>
-                            <div id="homeRankBadge" class="px-3 py-1 bg-cyan-400/10 border border-cyan-400/20 rounded-lg text-[9px] font-black uppercase text-cyan-400">Bronze I</div>
+                        <div class="flex items-center gap-3 mb-6">
+                            <div class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></div>
+                            <h3 class="text-[10px] font-black uppercase text-gray-400 tracking-widest">Meta AI Analyst v9.1</h3>
                         </div>
-                        <h2 id="totalSavings" class="text-5xl md:text-7xl font-black tracking-tighter">฿ 0.00</h2>
+                        <p id="aiText" class="text-sm text-gray-300 leading-relaxed font-light italic">
+                            "กำลังประมวลผลข้อมูลการออมปัจจุบันเพื่อระบุแนวทาง..."
+                        </p>
                     </div>
-                    <div class="mt-12">
-                        <div class="flex justify-between items-end mb-2">
-                            <span id="progressText" class="text-3xl font-black text-cyan-400">0%</span>
-                            <span id="goalLabel" class="text-[10px] font-black text-gray-500 uppercase">Target: ฿ 0</span>
-                        </div>
-                        <div class="w-full h-2 bg-slate-900 rounded-full overflow-hidden">
-                            <div id="progressBar" class="h-full bg-gradient-to-r from-cyan-400 to-indigo-600 transition-all duration-700" style="width: 0%"></div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- AI Analyst -->
-                <div class="lg:col-span-4 glass-card p-8 bg-gradient-to-br from-slate-900/50 to-indigo-950/20">
-                    <div class="flex items-center gap-3 mb-6">
-                        <i class="fas fa-microchip text-cyan-400"></i>
-                        <h3 class="text-[10px] font-black uppercase text-gray-400 tracking-widest">Meta AI v8.9</h3>
-                    </div>
-                    <p id="aiInsight" class="text-sm text-gray-300 leading-relaxed italic">
-                        "กำลังรวบรวมข้อมูลเพื่อวิเคราะห์..."
-                    </p>
-                    <div class="mt-8 pt-6 border-t border-white/5">
-                        <div class="flex justify-between text-[9px] font-bold text-gray-500 uppercase">
-                            <span>Analysis Precision</span>
-                            <span class="text-emerald-400">99.9% Stable</span>
+                    <div class="pt-6 mt-6 border-t border-white/5">
+                        <div class="flex justify-between items-center">
+                            <span class="text-[9px] font-bold text-gray-600 uppercase">Status</span>
+                            <span class="text-[9px] font-black text-emerald-400 uppercase tracking-widest">Optimized</span>
                         </div>
                     </div>
                 </div>
 
-                <!-- Quick Actions -->
-                <div class="lg:col-span-12 glass-card p-6 md:p-8">
+                <!-- Input Interface -->
+                <div class="lg:col-span-12 glass-card p-8">
                     <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-                        <button onclick="quickAdd(20)" class="ctrl-btn p-5 bg-white/5 rounded-2xl border border-white/5 hover:border-cyan-400/40 transition-all">
-                            <p class="text-xl font-black">฿20</p>
-                            <p class="text-[9px] text-gray-500 uppercase">Lite</p>
+                        <button onclick="addValue(20)" class="action-btn p-6 bg-white/5 border border-white/5 rounded-2xl hover:border-cyan-400/50 hover:bg-cyan-500/5 transition-all active:scale-95">
+                            <p class="text-2xl font-black text-white">฿20</p>
+                            <p class="text-[9px] text-gray-500 uppercase mt-1">Add Lite</p>
                         </button>
-                        <button onclick="quickAdd(50)" class="ctrl-btn p-5 bg-white/5 rounded-2xl border border-white/5 hover:border-cyan-400/40 transition-all">
-                            <p class="text-xl font-black">฿50</p>
-                            <p class="text-[9px] text-gray-500 uppercase">Standard</p>
+                        <button onclick="addValue(50)" class="action-btn p-6 bg-white/5 border border-white/5 rounded-2xl hover:border-cyan-400/50 hover:bg-cyan-500/5 transition-all active:scale-95">
+                            <p class="text-2xl font-black text-white">฿50</p>
+                            <p class="text-[9px] text-gray-500 uppercase mt-1">Add Standard</p>
                         </button>
-                        <button onclick="quickAdd(100)" class="ctrl-btn p-5 bg-white/5 rounded-2xl border border-white/5 hover:border-cyan-400/40 transition-all">
-                            <p class="text-xl font-black">฿100</p>
-                            <p class="text-[9px] text-gray-500 uppercase">Premium</p>
+                        <button onclick="addValue(100)" class="action-btn p-6 bg-white/5 border border-white/5 rounded-2xl hover:border-cyan-400/50 hover:bg-cyan-500/5 transition-all active:scale-95">
+                            <p class="text-2xl font-black text-white">฿100</p>
+                            <p class="text-[9px] text-gray-500 uppercase mt-1">Add Premium</p>
                         </button>
-                        <button onclick="quickAdd(500)" class="ctrl-btn p-5 bg-white/5 rounded-2xl border border-white/5 hover:border-cyan-400/40 transition-all">
-                            <p class="text-xl font-black">฿500</p>
-                            <p class="text-[9px] text-gray-500 uppercase">Legend</p>
+                        <button onclick="addValue(500)" class="action-btn p-6 bg-white/5 border border-white/5 rounded-2xl hover:border-cyan-400/50 hover:bg-cyan-500/5 transition-all active:scale-95">
+                            <p class="text-2xl font-black text-white">฿500</p>
+                            <p class="text-[9px] text-gray-500 uppercase mt-1">Add Legend</p>
                         </button>
                     </div>
                     <div class="flex flex-col md:flex-row gap-4">
-                        <input type="number" id="customInput" placeholder="จำนวนเงิน..." class="flex-1 bg-slate-900/80 border border-white/10 rounded-xl px-6 py-4 outline-none focus:border-cyan-400 font-bold">
-                        <button onclick="manualAdd()" class="bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-black px-10 py-4 rounded-xl transition-all uppercase text-[11px] tracking-widest active:scale-95 shadow-lg shadow-cyan-500/20">บันทึกข้อมูล</button>
+                        <div class="relative flex-1">
+                            <i class="fas fa-coins absolute left-5 top-1/2 -translate-y-1/2 text-gray-600"></i>
+                            <input type="number" id="inputCustom" placeholder="ระบุจำนวนเงินเอง..." class="w-full bg-slate-900/50 border border-white/10 rounded-2xl pl-12 pr-6 py-5 outline-none focus:border-cyan-400 font-bold transition-all">
+                        </div>
+                        <button onclick="addManual()" class="bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-black px-12 py-5 rounded-2xl transition-all uppercase text-xs tracking-[0.2em] shadow-lg shadow-cyan-500/20 active:scale-95">บันทึกรายการ</button>
                     </div>
                 </div>
 
-                <!-- Recent Logs -->
-                <div id="historyGrid" class="lg:col-span-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    <!-- Tx Cards via JS -->
+                <!-- Transaction Grid -->
+                <div id="txGrid" class="lg:col-span-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <!-- Dynamic Log Items -->
                 </div>
             </div>
         </section>
 
-        <!-- Cloud Pocket Section -->
+        <!-- Page: Cloud Pocket -->
         <section id="page-pocket" class="page-section hidden">
             <div class="glass-card p-8">
                 <div class="flex flex-col md:flex-row justify-between items-center mb-10 gap-4">
                     <div>
-                        <h3 class="text-xl font-black uppercase tracking-tight">Cloud Pocket</h3>
-                        <p class="text-[10px] text-gray-500 font-bold uppercase">ระบบออมเงินแยกกระเป๋าอัจฉริยะ</p>
+                        <h3 class="text-2xl font-black uppercase tracking-tight">Cloud Pocket <span class="text-cyan-400 text-sm">v9.1</span></h3>
+                        <p class="text-[10px] text-gray-500 font-bold uppercase tracking-widest mt-1">ระบบแยกออมตามความต้องการแยกส่วน</p>
                     </div>
-                    <button onclick="openNewPocketModal()" class="bg-white/5 border border-white/10 px-6 py-2 rounded-xl text-[10px] font-black uppercase hover:bg-white/10 transition-all">Create New Pocket</button>
+                    <button onclick="openPocketModal()" class="bg-cyan-500/10 text-cyan-400 border border-cyan-400/20 px-8 py-3 rounded-2xl text-[10px] font-black uppercase hover:bg-cyan-500 hover:text-slate-950 transition-all">Initialize New Pocket</button>
                 </div>
                 
-                <div id="pocketsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <!-- Pockets via JS -->
+                <div id="pocketArea" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Dynamic Pockets -->
                 </div>
             </div>
         </section>
 
-        <!-- Analytics Section -->
+        <!-- Page: Analytics -->
         <section id="page-stats" class="page-section hidden">
-            <div class="glass-card p-8">
-                <h3 class="text-xs font-black uppercase tracking-widest mb-8 text-gray-500">Capital Flow Analytics</h3>
-                <div class="h-[350px] w-full">
-                    <canvas id="savingsChart"></canvas>
+            <div class="glass-card p-10">
+                <div class="flex items-center gap-4 mb-10">
+                    <div class="w-12 h-12 rounded-2xl bg-slate-900 border border-white/10 flex items-center justify-center text-cyan-400"><i class="fas fa-chart-area"></i></div>
+                    <h3 class="text-xl font-black uppercase tracking-tighter">Financial Analytics Core</h3>
                 </div>
-                <div class="grid grid-cols-2 gap-4 mt-8">
-                    <div class="p-6 bg-slate-900 rounded-3xl border border-white/5">
-                        <p class="text-[9px] font-black text-gray-500 uppercase mb-2">บันทึกทั้งหมด</p>
-                        <p id="statCount" class="text-4xl font-black">0</p>
+                <div class="h-[400px] w-full">
+                    <canvas id="chartCanvas"></canvas>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-10">
+                    <div class="p-8 bg-slate-900/50 rounded-3xl border border-white/5">
+                        <p class="text-[10px] font-black text-gray-500 uppercase mb-2">บันทึกสะสม</p>
+                        <p id="statTotalCount" class="text-4xl font-black">0</p>
                     </div>
-                    <div class="p-6 bg-slate-900 rounded-3xl border border-white/5">
-                        <p class="text-[9px] font-black text-gray-500 uppercase mb-2">เฉลี่ยต่อรายการ</p>
-                        <p id="statAvg" class="text-4xl font-black text-cyan-400">฿ 0</p>
+                    <div class="p-8 bg-slate-900/50 rounded-3xl border border-white/5">
+                        <p class="text-[10px] font-black text-gray-500 uppercase mb-2">ค่าเฉลี่ยต่อครั้ง</p>
+                        <p id="statAvgVal" class="text-4xl font-black text-cyan-400">฿ 0</p>
+                    </div>
+                    <div class="p-8 bg-slate-900/50 rounded-3xl border border-white/5">
+                        <p class="text-[10px] font-black text-gray-500 uppercase mb-2">เป้าหมายสูงสุด</p>
+                        <p id="statMaxGoal" class="text-4xl font-black text-purple-500">฿ 0</p>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- Military Rank Section -->
+        <!-- Page: Rank System -->
         <section id="page-rank" class="page-section hidden">
-            <div class="glass-card p-8 md:p-12">
-                <div class="text-center mb-12">
-                    <h3 class="text-3xl font-black uppercase tracking-tighter">Military Rank System</h3>
-                    <p class="text-[10px] text-cyan-400 font-bold uppercase tracking-[0.3em] mt-2">สะสมเงินเพื่อเลื่อนขั้นสู่จุดสูงสุด</p>
+            <div class="glass-card p-10 md:p-16">
+                <div class="text-center mb-16">
+                    <h3 class="text-4xl font-black uppercase tracking-tighter">Military Rank System</h3>
+                    <p class="text-[11px] text-cyan-400 font-bold uppercase tracking-[0.4em] mt-4">ออมเงินเพื่อเลื่อนขั้นสู่จุดสูงสุดของระบบ</p>
                 </div>
-                <div id="rankList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-12">
-                    <!-- Ranks Generated via JS -->
+                <div id="rankContainer" class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-16">
+                    <!-- Rank Cards via JS -->
                 </div>
-                <div class="p-10 bg-slate-900/50 rounded-[2.5rem] border border-white/10 text-center relative overflow-hidden">
-                    <div class="absolute top-0 right-0 p-4 opacity-5 text-8xl"><i class="fas fa-shield-alt"></i></div>
-                    <p class="text-[10px] text-gray-500 font-black uppercase mb-4 tracking-widest">สถานะยศปัจจุบัน</p>
-                    <div id="rankDisplay" class="flex flex-col items-center">
-                        <div id="rankBigIcon" class="w-24 h-24 rounded-full bg-cyan-400/5 flex items-center justify-center text-4xl text-cyan-400 mb-6 border border-cyan-400/10 shadow-[0_0_30px_rgba(0,242,255,0.1)]">
-                            <i class="fas fa-medal"></i>
+                <div class="p-12 bg-slate-950/50 rounded-[3rem] border border-white/10 text-center relative overflow-hidden group">
+                    <div class="absolute inset-0 bg-gradient-to-b from-cyan-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    <p class="text-[11px] text-gray-500 font-black uppercase mb-6 tracking-widest">สถานะยศปัจจุบันของคุณ</p>
+                    <div class="flex flex-col items-center relative z-10">
+                        <div id="bigRankIcon" class="w-32 h-32 rounded-full flex items-center justify-center text-5xl mb-8 border-4 border-slate-800 transition-all duration-500">
+                            <i class="fas fa-id-badge"></i>
                         </div>
-                        <h4 id="rankBigName" class="text-4xl font-black uppercase tracking-tighter">Bronze I</h4>
-                        <p id="rankNextStep" class="text-[10px] text-gray-400 font-bold uppercase mt-4 italic">Next Rank: ฿ 0</p>
+                        <h4 id="bigRankName" class="text-5xl font-black uppercase tracking-tighter">Bronze I</h4>
+                        <div id="rankStepInfo" class="mt-8 px-6 py-2 bg-slate-900 rounded-full text-[11px] font-bold text-gray-400 uppercase border border-white/5">
+                            ต้องการอีก ฿ 0 เพื่อเลื่อนขั้น
+                        </div>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- Kernel Settings -->
+        <!-- Page: Kernel Settings -->
         <section id="page-settings" class="page-section hidden">
-            <div class="glass-card p-8 space-y-8">
-                <h3 class="text-xl font-black uppercase tracking-tight pb-4 border-b border-white/5">Kernel Core v8.9 Stable</h3>
+            <div class="glass-card p-10 space-y-10">
+                <div class="flex justify-between items-center border-b border-white/5 pb-6">
+                    <h3 class="text-2xl font-black uppercase tracking-tight">Kernel Settings <span class="text-xs text-gray-500 ml-2">v9.1 Stable</span></h3>
+                </div>
                 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
                     <div class="space-y-4">
-                        <label class="text-[10px] font-black text-gray-500 uppercase">Synchronize Total Balance</label>
-                        <div class="flex gap-2">
-                            <input type="number" id="kernelTotal" class="flex-1 bg-slate-900 border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-cyan-400 font-bold">
-                            <button onclick="syncCore()" class="bg-cyan-500 text-slate-950 px-6 rounded-xl text-[10px] font-black uppercase">Sync</button>
+                        <label class="text-[11px] font-black text-gray-500 uppercase tracking-widest">Core Balance Sync</label>
+                        <div class="flex gap-3">
+                            <input type="number" id="setKernelTotal" class="flex-1 bg-slate-900 border border-white/10 rounded-2xl px-5 py-4 outline-none focus:border-cyan-400 font-bold text-lg">
+                            <button onclick="syncKernel()" class="bg-cyan-500 text-slate-950 px-8 rounded-2xl text-[11px] font-black uppercase tracking-widest shadow-lg shadow-cyan-500/10">Sync</button>
                         </div>
                     </div>
                     <div class="space-y-4">
-                        <label class="text-[10px] font-black text-gray-500 uppercase">Set Main Objective</label>
-                        <input type="number" id="kernelGoal" onchange="syncCore()" class="w-full bg-slate-900 border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-cyan-400 font-bold" placeholder="1000">
+                        <label class="text-[11px] font-black text-gray-500 uppercase tracking-widest">Master Objective</label>
+                        <input type="number" id="setKernelGoal" onchange="syncKernel()" class="w-full bg-slate-900 border border-white/10 rounded-2xl px-5 py-4 outline-none focus:border-cyan-400 font-bold text-lg" placeholder="1000">
                     </div>
                 </div>
 
-                <div class="p-8 bg-rose-500/5 border border-rose-500/10 rounded-2xl">
-                    <h4 class="text-rose-500 font-black text-xs uppercase mb-1">Emergency Purge</h4>
-                    <p class="text-[9px] text-gray-500 font-bold mb-6 uppercase tracking-wider">ล้างข้อมูลทั้งหมดถาวรใน 60 วินาที (ไม่สามารถกู้คืนได้)</p>
-                    <button id="purgeBtn" onclick="initPurge()" class="bg-rose-500/10 hover:bg-rose-500 text-rose-500 hover:text-white border border-rose-500/20 px-8 py-3 rounded-xl transition-all text-[10px] font-black uppercase">Confirm Purge</button>
-                    <p id="purgeCountdown" class="mt-4 text-[10px] font-black text-rose-400 hidden animate-pulse uppercase text-center">Protocol Active: Purging in 60s...</p>
+                <div class="p-10 bg-rose-500/5 border border-rose-500/10 rounded-3xl">
+                    <div class="flex items-center gap-4 mb-4 text-rose-500">
+                        <i class="fas fa-radiation-alt text-2xl"></i>
+                        <h4 class="font-black text-sm uppercase">Advanced System Purge</h4>
+                    </div>
+                    <p class="text-xs text-gray-500 mb-8 leading-relaxed uppercase font-bold">การกดปุ่มนี้จะทำการลบโครงสร้างข้อมูลทั้งหมดถาวรภายใน 60 วินาที ระบบจะทำการล้าง Cache และ Memory ทั้งหมดของเวอร์ชัน 9.1</p>
+                    <button id="btnPurge" onclick="startPurge()" class="w-full md:w-auto bg-rose-500/10 hover:bg-rose-500 text-rose-500 hover:text-white border border-rose-500/20 px-12 py-4 rounded-2xl transition-all text-[11px] font-black uppercase tracking-[0.2em]">Confirm Protocol</button>
+                    <p id="purgeStatus" class="mt-6 text-[11px] font-black text-rose-400 hidden animate-pulse uppercase tracking-[0.3em] text-center">System Destruct Active: 60s Remaining...</p>
                 </div>
             </div>
         </section>
-
     </main>
 
-    <!-- Modal for Pocket -->
-    <div id="pocketModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-[9000] hidden flex items-center justify-center p-4">
-        <div class="glass-card p-8 w-full max-w-md">
-            <h3 class="text-xl font-black uppercase mb-6">New Cloud Pocket</h3>
-            <div class="space-y-4">
-                <input type="text" id="pocketName" placeholder="Pocket Name (เช่น ท่องเที่ยว, ซื้อของ)" class="w-full bg-slate-900 border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-cyan-400 font-bold text-sm">
-                <input type="number" id="pocketGoal" placeholder="เป้าหมาย (฿)" class="w-full bg-slate-900 border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-cyan-400 font-bold text-sm">
-                <div class="flex gap-2 pt-4">
-                    <button onclick="closePocketModal()" class="flex-1 bg-white/5 py-3 rounded-xl text-[10px] font-black uppercase">Cancel</button>
-                    <button onclick="createPocket()" class="flex-1 bg-cyan-500 text-slate-950 py-3 rounded-xl text-[10px] font-black uppercase">Initialize</button>
+    <!-- Modal: New Pocket -->
+    <div id="pocketModal" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-[10000] hidden flex items-center justify-center p-4">
+        <div class="glass-card p-10 w-full max-w-md border-2 border-cyan-500/20 shadow-2xl">
+            <h3 class="text-2xl font-black uppercase mb-8 flex items-center gap-3"><i class="fas fa-folder-plus text-cyan-400"></i> New Cloud Pocket</h3>
+            <div class="space-y-5">
+                <div>
+                    <label class="text-[10px] font-black text-gray-500 uppercase mb-2 block">Pocket Identifier</label>
+                    <input type="text" id="pocketInName" placeholder="เช่น ท่องเที่ยว, ของขวัญ, ฉุกเฉิน" class="w-full bg-slate-900 border border-white/10 rounded-2xl px-5 py-4 outline-none focus:border-cyan-400 font-bold">
+                </div>
+                <div>
+                    <label class="text-[10px] font-black text-gray-500 uppercase mb-2 block">Specific Objective (฿)</label>
+                    <input type="number" id="pocketInGoal" placeholder="เช่น 5000" class="w-full bg-slate-900 border border-white/10 rounded-2xl px-5 py-4 outline-none focus:border-cyan-400 font-bold">
+                </div>
+                <div class="flex gap-4 pt-6">
+                    <button onclick="closePocketModal()" class="flex-1 bg-white/5 py-4 rounded-2xl text-[11px] font-black uppercase tracking-widest text-gray-400">Abort</button>
+                    <button onclick="createPocket()" class="flex-1 bg-cyan-500 text-slate-950 py-4 rounded-2xl text-[11px] font-black uppercase tracking-widest shadow-lg shadow-cyan-500/10">Initialize</button>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        // --- System State v8.9 Stable ---
+        // --- System State v9.1 Stable ---
         let state = {
             totalSavings: 0,
             goal: 1000,
@@ -355,387 +386,385 @@
             isPurging: false
         };
 
-        const ranks = [
-            { name: 'Bronze', min: 0, color: '#cd7f32', icon: 'fa-medal' },
-            { name: 'Silver', min: 1000, color: '#c0c0c0', icon: 'fa-award' },
-            { name: 'Gold', min: 5000, color: '#ffd700', icon: 'fa-trophy' },
-            { name: 'Platinum', min: 15000, color: '#e5e4e2', icon: 'fa-gem' },
-            { name: 'Diamond', min: 40000, color: '#b9f2ff', icon: 'fa-ring' },
-            { name: 'Master', min: 100000, color: '#ff00ff', icon: 'fa-crown' },
-            { name: 'Grandmaster', min: 250000, color: '#ff4500', icon: 'fa-fire' },
-            { name: 'Legend', min: 500000, color: '#00f2ff', icon: 'fa-bolt' }
+        const rankDefinitions = [
+            { name: 'Bronze', min: 0, color: '#cd7f32', icon: 'fa-id-badge' },
+            { name: 'Silver', min: 2000, color: '#c0c0c0', icon: 'fa-shield-halved' },
+            { name: 'Gold', min: 10000, color: '#ffd700', icon: 'fa-medal' },
+            { name: 'Platinum', min: 30000, color: '#e5e4e2', icon: 'fa-award' },
+            { name: 'Diamond', min: 70000, color: '#b9f2ff', icon: 'fa-gem' },
+            { name: 'Master', min: 150000, color: '#ff00ff', icon: 'fa-crown' },
+            { name: 'Grandmaster', min: 400000, color: '#ff4500', icon: 'fa-fire' },
+            { name: 'Legend', min: 1000000, color: '#00f2ff', icon: 'fa-bolt' }
         ];
 
         let chart = null;
 
+        // --- Core Initialize ---
         window.onload = function() {
-            loadSystem();
-            updateClock();
+            loadMemory();
+            updateTime();
             updateGreeting();
-            setInterval(updateClock, 1000);
+            setInterval(updateTime, 1000);
             setInterval(updateGreeting, 60000);
-            setInterval(cleanSessionHistory, 60000);
-            initChart();
-            render();
-            pushToast("System Re-Injected: v8.9 Stable", "info");
+            setInterval(flushOldSessionLogs, 60000); // 1-minute auto flush
+            initAnalytics();
+            renderCore();
+            sendToast("Protocol v9.1 Stable Activated", "info");
         };
 
-        function loadSystem() {
-            const saved = localStorage.getItem('nova_v8_9_stable');
+        function loadMemory() {
+            const saved = localStorage.getItem('nova_v9_1_stable');
             if (saved) {
-                const parsed = JSON.parse(saved);
-                state = { ...state, ...parsed };
-                // Cleanup 1-min session display on start
+                state = { ...state, ...JSON.parse(saved) };
+                // Keep history, but filter recent session display if old
                 const now = new Date();
                 state.recentDisplay = (state.recentDisplay || []).filter(i => (now - new Date(i.date)) < 60000);
             }
-            applyConnectionState();
+            applyPowerState();
         }
 
-        function saveSystem() {
-            localStorage.setItem('nova_v8_9_stable', JSON.stringify(state));
+        function saveMemory() {
+            localStorage.setItem('nova_v9_1_stable', JSON.stringify(state));
         }
 
-        function updateClock() {
+        // --- UI Updates ---
+        function updateTime() {
             const now = new Date();
             const d = now.toLocaleDateString('th-TH', { day: '2-digit', month: '2-digit', year: 'numeric' });
             const t = now.toLocaleTimeString('th-TH', { hour12: false });
-            document.getElementById('liveClock').innerText = `${d} | ${t}`;
+            document.getElementById('liveTime').innerText = `${d} | ${t}`;
         }
 
         function updateGreeting() {
-            const hour = new Date().getHours();
-            let g = "สวัสดีตอนเช้า";
-            if (hour >= 11 && hour < 13) g = "สวัสดีตอนสาย";
-            else if (hour >= 13 && hour < 17) g = "สวัสดีตอนบ่าย";
-            else if (hour >= 17 || hour < 5) g = "สวัสดีตอนเย็น/ค่ำ";
-            document.getElementById('greetingText').innerText = g;
+            const h = new Date().getHours();
+            let msg = "สวัสดีตอนเช้า";
+            if (h >= 10 && h < 12) msg = "สวัสดีตอนสาย";
+            else if (h >= 12 && h < 17) msg = "สวัสดีตอนบ่าย";
+            else if (h >= 17 || h < 5) msg = "สวัสดีตอนเย็น";
+            document.getElementById('dayGreeting').innerText = msg;
         }
 
-        // --- Core Rendering ---
-        function render() {
-            // Dashboard
-            document.getElementById('totalSavings').innerText = `฿ ${state.totalSavings.toLocaleString(undefined, {minimumFractionDigits: 2})}`;
+        // --- Render Core ---
+        function renderCore() {
+            // Dashboard Balance
+            document.getElementById('displayTotal').innerText = `฿ ${state.totalSavings.toLocaleString(undefined, {minimumFractionDigits: 2})}`;
             const ratio = state.goal > 0 ? Math.min((state.totalSavings / state.goal) * 100, 100) : 0;
-            document.getElementById('progressBar').style.width = `${ratio}%`;
-            document.getElementById('progressText').innerText = `${ratio.toFixed(1)}%`;
-            document.getElementById('goalLabel').innerText = `Target: ฿ ${state.goal.toLocaleString()}`;
+            document.getElementById('mainProgress').style.width = `${ratio}%`;
+            document.getElementById('displayPercent').innerText = `${ratio.toFixed(1)}%`;
+            document.getElementById('displayGoal').innerText = `Target: ฿ ${state.goal.toLocaleString()}`;
 
-            // Settings Sync
-            document.getElementById('kernelTotal').value = state.totalSavings;
-            document.getElementById('kernelGoal').value = state.goal;
+            // Sync Settings Inputs
+            document.getElementById('setKernelTotal').value = state.totalSavings;
+            document.getElementById('setKernelGoal').value = state.goal;
 
-            renderRecentLogs();
+            renderLogs();
             renderPockets();
             renderRanks();
-            analyzeAI();
-            updateStats();
-            autoScaleGoal();
+            metaAIAnalyze();
+            updateAnalyticsData();
+            autoScaleObjective();
         }
 
-        function renderRecentLogs() {
-            const grid = document.getElementById('historyGrid');
+        function renderLogs() {
+            const grid = document.getElementById('txGrid');
             grid.innerHTML = '';
             if (state.recentDisplay.length === 0) {
-                grid.innerHTML = `<div class="col-span-full py-16 text-center opacity-10"><p class="text-[10px] font-black uppercase tracking-[0.5em]">No Session Logs Detected</p></div>`;
+                grid.innerHTML = `<div class="col-span-full py-12 text-center opacity-20"><p class="text-[9px] font-black uppercase tracking-[0.6em]">No Recent Network Traffic</p></div>`;
                 return;
             }
             state.recentDisplay.slice().reverse().forEach(tx => {
-                const card = document.createElement('div');
-                card.className = 'glass-card p-6 flex justify-between items-center bg-cyan-400/5 border-l-4 border-cyan-400';
-                card.innerHTML = `
+                const item = document.createElement('div');
+                item.className = 'glass-card p-6 flex justify-between items-center bg-cyan-500/5 border-l-4 border-cyan-400';
+                item.innerHTML = `
                     <div class="flex items-center gap-4">
-                        <i class="fas fa-arrow-up text-cyan-400 text-xs"></i>
+                        <i class="fas fa-plus-circle text-cyan-400 text-xs"></i>
                         <div>
-                            <p class="text-[9px] font-black text-gray-500 uppercase">${new Date(tx.date).toLocaleTimeString('th-TH')}</p>
-                            <p class="text-[10px] font-bold text-white uppercase tracking-tighter">Memory Injection</p>
+                            <p class="text-[8px] font-black text-gray-500 uppercase">${new Date(tx.date).toLocaleTimeString('th-TH')}</p>
+                            <p class="text-[10px] font-bold text-white uppercase tracking-tighter">Memory Entry</p>
                         </div>
                     </div>
                     <span class="text-xl font-black">฿${tx.amount.toLocaleString()}</span>
                 `;
-                grid.appendChild(card);
+                grid.appendChild(item);
             });
         }
 
         function renderPockets() {
-            const grid = document.getElementById('pocketsGrid');
-            grid.innerHTML = '';
-            state.pockets.forEach((p, idx) => {
-                const ratio = p.goal > 0 ? Math.min((p.current / p.goal) * 100, 100) : 0;
+            const area = document.getElementById('pocketArea');
+            area.innerHTML = '';
+            state.pockets.forEach((p, i) => {
+                const pct = p.goal > 0 ? Math.min((p.current / p.goal) * 100, 100) : 0;
                 const card = document.createElement('div');
-                card.className = 'glass-card pocket-card p-6';
+                card.className = 'glass-card p-8 border border-white/5 relative overflow-hidden';
                 card.innerHTML = `
                     <div class="flex justify-between items-start mb-6">
                         <div>
-                            <p class="text-sm font-black uppercase text-white">${p.name}</p>
-                            <p class="text-[9px] text-gray-500 uppercase">Pocket ID: ${idx+1}</p>
+                            <h4 class="text-base font-black uppercase text-white">${p.name}</h4>
+                            <p class="text-[8px] text-gray-500 font-bold uppercase tracking-widest mt-1">PID: #${i+1001}</p>
                         </div>
-                        <button onclick="deletePocket(${idx})" class="text-gray-600 hover:text-rose-500 transition-all"><i class="fas fa-times"></i></button>
+                        <button onclick="removePocket(${i})" class="text-gray-600 hover:text-rose-500 transition-all"><i class="fas fa-trash-alt text-xs"></i></button>
                     </div>
-                    <p class="text-2xl font-black mb-4">฿ ${p.current.toLocaleString()}</p>
-                    <div class="w-full h-1 bg-white/5 rounded-full overflow-hidden mb-2">
-                        <div class="h-full bg-cyan-400" style="width: ${ratio}%"></div>
+                    <div class="mb-6">
+                        <p class="text-2xl font-black">฿ ${p.current.toLocaleString()}</p>
+                        <p class="text-[9px] text-gray-500 font-bold uppercase mt-1">Of ฿${p.goal.toLocaleString()}</p>
                     </div>
-                    <div class="flex justify-between text-[8px] font-bold uppercase text-gray-500">
-                        <span>Progress: ${ratio.toFixed(0)}%</span>
-                        <span>Goal: ฿${p.goal.toLocaleString()}</span>
+                    <div class="w-full h-1.5 bg-slate-950 rounded-full overflow-hidden mb-8">
+                        <div class="h-full bg-cyan-400 shadow-[0_0_8px_rgba(0,242,255,0.4)]" style="width: ${pct}%"></div>
                     </div>
-                    <div class="flex gap-2 mt-6">
-                        <input type="number" id="pocketInput${idx}" placeholder="Add..." class="flex-1 bg-slate-900 border border-white/5 rounded-lg px-3 py-2 text-xs outline-none focus:border-cyan-400">
-                        <button onclick="addToPocket(${idx})" class="bg-cyan-500 text-slate-950 px-4 rounded-lg text-[9px] font-black uppercase">Add</button>
+                    <div class="flex gap-2">
+                        <input type="number" id="pocketIn${i}" placeholder="฿..." class="flex-1 bg-slate-900 border border-white/5 rounded-xl px-4 py-2 text-xs outline-none focus:border-cyan-400 font-bold">
+                        <button onclick="fundPocket(${i})" class="bg-cyan-500 text-slate-950 px-5 rounded-xl text-[9px] font-black uppercase">Inject</button>
                     </div>
                 `;
-                grid.appendChild(card);
+                area.appendChild(card);
             });
         }
 
         function renderRanks() {
-            const list = document.getElementById('rankList');
-            list.innerHTML = '';
-            let currentRank = ranks[0];
-            ranks.forEach(r => { if (state.totalSavings >= r.min) currentRank = r; });
+            const container = document.getElementById('rankContainer');
+            container.innerHTML = '';
+            let current = rankDefinitions[0];
+            rankDefinitions.forEach(r => { if (state.totalSavings >= r.min) current = r; });
 
-            ranks.forEach(r => {
-                const active = currentRank.name === r.name;
-                const locked = state.totalSavings < r.min;
+            rankDefinitions.forEach(r => {
+                const isActive = current.name === r.name;
+                const isLocked = state.totalSavings < r.min;
                 const card = document.createElement('div');
-                card.className = `p-6 glass-card text-center ${active ? 'rank-card-active' : ''} ${locked ? 'opacity-20' : ''}`;
+                card.className = `p-6 glass-card text-center transition-all ${isActive ? 'rank-glow scale-105' : ''} ${isLocked ? 'opacity-20' : ''}`;
+                card.style.setProperty('--rank-color', r.color);
                 card.innerHTML = `
                     <i class="fas ${r.icon} text-2xl mb-4" style="color: ${r.color}"></i>
                     <p class="text-[10px] font-black uppercase tracking-widest" style="color: ${r.color}">${r.name}</p>
                     <p class="text-[9px] text-gray-500 font-bold mt-2">฿ ${r.min.toLocaleString()}+</p>
                 `;
-                list.appendChild(card);
+                container.appendChild(card);
             });
 
-            document.getElementById('homeRankBadge').innerText = currentRank.name;
-            document.getElementById('rankBigName').innerText = currentRank.name;
-            document.getElementById('rankBigName').style.color = currentRank.color;
-            document.getElementById('rankBigIcon').style.color = currentRank.color;
-            document.getElementById('rankBigIcon').style.boxShadow = `0 0 30px ${currentRank.color}33`;
-            document.getElementById('rankBigIcon').innerHTML = `<i class="fas ${currentRank.icon}"></i>`;
+            document.getElementById('badgeRank').innerText = current.name;
+            document.getElementById('bigRankName').innerText = current.name;
+            document.getElementById('bigRankName').style.color = current.color;
+            document.getElementById('bigRankIcon').style.color = current.color;
+            document.getElementById('bigRankIcon').style.borderColor = `${current.color}44`;
+            document.getElementById('bigRankIcon').style.boxShadow = `0 0 40px ${current.color}22`;
+            document.getElementById('bigRankIcon').innerHTML = `<i class="fas ${current.icon}"></i>`;
 
-            const next = ranks[ranks.indexOf(currentRank) + 1];
+            const next = rankDefinitions[rankDefinitions.indexOf(current) + 1];
             if (next) {
                 const diff = next.min - state.totalSavings;
-                document.getElementById('rankNextStep').innerText = `Next Rank: ฿ ${diff.toLocaleString()} to reach ${next.name}`;
+                document.getElementById('rankStepInfo').innerText = `ต้องการอีก ฿ ${diff.toLocaleString()} เพื่อเลื่อนขั้นสู่ ${next.name}`;
             } else {
-                document.getElementById('rankNextStep').innerText = "MAX RANK ACHIEVED (LEGEND)";
+                document.getElementById('rankStepInfo').innerText = "MAX RANK ACHIEVED: LEGENDARY";
             }
         }
 
-        // --- Logical Operations ---
-        function toggleConnection() {
+        // --- Functional Logic ---
+        function toggleSystemPower() {
             state.isOnline = !state.isOnline;
-            applyConnectionState();
-            saveSystem();
-            pushToast(state.isOnline ? "Kernel Protocol: Online" : "Kernel Protocol: Offline", state.isOnline ? "success" : "error");
+            applyPowerState();
+            saveMemory();
+            sendToast(state.isOnline ? "Kernel Protocol: Online" : "Kernel Protocol: Offline", state.isOnline ? "success" : "error");
         }
 
-        function applyConnectionState() {
-            const dot = document.getElementById('connDot');
-            const lab = document.getElementById('connLabel');
-            const btns = document.querySelectorAll('.ctrl-btn');
+        function applyPowerState() {
+            const dot = document.getElementById('statusDot');
+            const txt = document.getElementById('statusText');
             const power = document.getElementById('powerBtn');
-            const inputs = document.querySelectorAll('#customInput, #kernelTotal, #kernelGoal');
+            const inputs = document.querySelectorAll('input, button:not(#powerBtn):not(.nav-btn)');
             
             if (state.isOnline) {
                 dot.className = "w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]";
-                lab.innerText = "Online";
-                lab.className = "text-[8px] font-black uppercase text-emerald-400";
-                power.className = "w-8 h-8 flex items-center justify-center rounded-full bg-emerald-500/10 text-emerald-400 text-xs transition-all";
-                btns.forEach(b => b.disabled = false);
+                txt.innerText = "Online";
+                txt.className = "text-[8px] font-black uppercase text-emerald-400";
+                power.className = "w-9 h-9 flex items-center justify-center rounded-full bg-emerald-500/10 text-emerald-400 text-xs transition-all";
                 inputs.forEach(i => i.disabled = false);
             } else {
                 dot.className = "w-1.5 h-1.5 rounded-full bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.5)]";
-                lab.innerText = "Offline";
-                lab.className = "text-[8px] font-black uppercase text-rose-400";
-                power.className = "w-8 h-8 flex items-center justify-center rounded-full bg-rose-500/10 text-rose-400 text-xs transition-all";
-                btns.forEach(b => b.disabled = true);
+                txt.innerText = "Offline";
+                txt.className = "text-[8px] font-black uppercase text-rose-400";
+                power.className = "w-9 h-9 flex items-center justify-center rounded-full bg-rose-500/10 text-rose-400 text-xs transition-all";
                 inputs.forEach(i => i.disabled = true);
             }
         }
 
-        function processEntry(val) {
-            if (!state.isOnline || val <= 0) return;
-            const tx = { id: Date.now(), amount: val, date: new Date().toISOString() };
-            state.totalSavings += val;
-            state.history.push(tx);
-            state.recentDisplay.push(tx);
-            saveSystem();
-            render();
-            pushToast(`Entry Saved: +฿${val.toLocaleString()}`, "success");
+        function executeEntry(v) {
+            if (!state.isOnline || v <= 0) return;
+            const log = { id: Date.now(), amount: v, date: new Date().toISOString() };
+            state.totalSavings += v;
+            state.history.push(log);
+            state.recentDisplay.push(log);
+            saveMemory();
+            renderCore();
+            sendToast(`บันทึกสำเร็จ: +฿${v.toLocaleString()}`, "success");
         }
 
-        function quickAdd(v) { processEntry(v); }
-        function manualAdd() {
-            const el = document.getElementById('customInput');
-            const v = parseFloat(el.value);
-            if (v > 0) { processEntry(v); el.value = ''; }
+        function addValue(v) { executeEntry(v); }
+        function addManual() {
+            const el = document.getElementById('inputCustom');
+            const val = parseFloat(el.value);
+            if (val > 0) { executeEntry(val); el.value = ''; }
         }
 
-        function syncCore() {
+        function syncKernel() {
             if (!state.isOnline) return;
-            state.totalSavings = parseFloat(document.getElementById('kernelTotal').value) || 0;
-            state.goal = parseFloat(document.getElementById('kernelGoal').value) || 1000;
-            saveSystem();
-            render();
-            pushToast("System Kernel Synchronized", "info");
+            state.totalSavings = parseFloat(document.getElementById('setKernelTotal').value) || 0;
+            state.goal = parseFloat(document.getElementById('setKernelGoal').value) || 1000;
+            saveMemory();
+            renderCore();
+            sendToast("Kernel Database Synchronized", "info");
         }
 
-        function cleanSessionHistory() {
+        function flushOldSessionLogs() {
             const now = new Date();
-            state.recentDisplay = state.recentDisplay.filter(i => (now - new Date(i.date)) < 60000);
-            renderRecentLogs();
+            state.recentDisplay = (state.recentDisplay || []).filter(i => (now - new Date(i.date)) < 60000);
+            renderLogs();
         }
 
         // --- Pocket Logic ---
-        function openNewPocketModal() { document.getElementById('pocketModal').classList.remove('hidden'); }
+        function openPocketModal() { document.getElementById('pocketModal').classList.remove('hidden'); }
         function closePocketModal() { document.getElementById('pocketModal').classList.add('hidden'); }
         function createPocket() {
-            const name = document.getElementById('pocketName').value;
-            const goal = parseFloat(document.getElementById('pocketGoal').value);
+            const name = document.getElementById('pocketInName').value;
+            const goal = parseFloat(document.getElementById('pocketInGoal').value);
             if (name && goal > 0) {
                 state.pockets.push({ name, goal, current: 0 });
-                saveSystem();
-                render();
+                saveMemory();
+                renderCore();
                 closePocketModal();
-                pushToast(`Pocket '${name}' Created`, "success");
-                document.getElementById('pocketName').value = '';
-                document.getElementById('pocketGoal').value = '';
+                sendToast(`กระเป๋า ${name} ถูกสร้างขึ้นแล้ว`, "success");
+                document.getElementById('pocketInName').value = '';
+                document.getElementById('pocketInGoal').value = '';
             }
         }
-        function deletePocket(idx) {
+        function removePocket(idx) {
             state.pockets.splice(idx, 1);
-            saveSystem();
-            render();
-            pushToast("Pocket Destroyed", "info");
+            saveMemory();
+            renderCore();
+            sendToast("ลบกระเป๋าเงินแล้ว", "info");
         }
-        function addToPocket(idx) {
-            const val = parseFloat(document.getElementById(`pocketInput${idx}`).value);
+        function fundPocket(idx) {
+            const val = parseFloat(document.getElementById(`pocketIn${idx}`).value);
             if (val > 0) {
                 state.pockets[idx].current += val;
-                saveSystem();
-                render();
-                pushToast(`Funded Pocket: +฿${val}`, "success");
-                document.getElementById(`pocketInput${idx}`).value = '';
+                saveMemory();
+                renderCore();
+                sendToast(`เติมเงินเข้ากระเป๋าสำเร็จ: +฿${val}`, "success");
+                document.getElementById(`pocketIn${idx}`).value = '';
             }
         }
 
-        // --- AI Analysis ---
-        function analyzeAI() {
-            const el = document.getElementById('aiInsight');
+        // --- AI Analysis v9.1 ---
+        function metaAIAnalyze() {
+            const el = document.getElementById('aiText');
             const count = state.history.length;
             if (count === 0) {
-                el.innerText = `"ระบบพร้อมใช้งาน เริ่มบันทึกก้าวแรกเพื่อปลดล็อกการวิเคราะห์จาก Meta AI เวอร์ชันล่าสุด"`;
+                el.innerText = `"เริ่มต้นบันทึกการออมครั้งแรกของคุณ ระบบวิเคราะห์ Meta AI v9.1 จะเริ่มทำงานทันทีหลังจากตรวจพบบันทึกในฐานข้อมูล"`;
             } else {
-                const recent = state.history.slice(-5);
+                const recent = state.history.slice(-10);
                 const sum = recent.reduce((a, b) => a + b.amount, 0);
-                if (sum > 1000) el.innerText = `"พฤติกรรมการออมของคุณมีความเสถียรสูงมาก Meta AI แนะนำให้รักษามาตรฐานนี้เพื่อก้าวสู่ยศ Diamond ในเร็วๆ นี้"`;
-                else el.innerText = `"การออมทีละน้อยอย่างสม่ำเสมอเป็นกุญแจสำคัญ คุณกำลังสร้างฐานรากทางการเงินที่มั่นคงในระบบ NovaSave"`;
+                if (sum > 2000) el.innerText = `"วินัยการเงินยอดเยี่ยม! ยอดการออมล่าสุดแสดงให้เห็นถึงความมั่งคั่งที่เพิ่มขึ้นอย่างรวดเร็ว รักษาจังหวะนี้เพื่อปลดล็อกยศ Grandmaster"`;
+                else el.innerText = `"การออมทีละน้อยสม่ำเสมอคือพลังของ AI คุณกำลังสะสมความสำเร็จอย่างต่อเนื่อง ระบบกำลังคำนวณระยะเวลาเข้าสู่เป้าหมายถัดไป"`;
             }
         }
 
-        function autoScaleGoal() {
+        function autoScaleObjective() {
             if (state.totalSavings >= state.goal && state.goal > 0) {
-                pushToast("Main Objective Reached! Scaling...", "info");
+                sendToast("Objective Met! Expanding Network...", "info");
                 setTimeout(() => {
-                    state.goal = Math.ceil((state.goal * 2.2) / 1000) * 1000;
-                    saveSystem();
-                    render();
-                }, 5000);
+                    state.goal = Math.ceil((state.goal * 2.5) / 1000) * 1000;
+                    saveMemory();
+                    renderCore();
+                }, 8000);
             }
         }
 
-        function initPurge() {
+        function startPurge() {
             if (state.isPurging) return;
             state.isPurging = true;
-            document.getElementById('purgeCountdown').classList.remove('hidden');
-            document.getElementById('purgeBtn').disabled = true;
-            pushToast("Self-Destruction Initiated", "error");
+            document.getElementById('purgeStatus').classList.remove('hidden');
+            document.getElementById('btnPurge').disabled = true;
+            sendToast("Self-Destruct Protocol Initialized", "error");
             setTimeout(() => {
                 state = { totalSavings: 0, goal: 1000, history: [], recentDisplay: [], pockets: [], isOnline: state.isOnline, isPurging: false };
-                saveSystem();
-                render();
-                document.getElementById('purgeCountdown').classList.add('hidden');
-                document.getElementById('purgeBtn').disabled = false;
-                pushToast("All Data Purged Permanently", "info");
+                saveMemory();
+                renderCore();
+                document.getElementById('purgeStatus').classList.add('hidden');
+                document.getElementById('btnPurge').disabled = false;
+                sendToast("System Purged Successfully", "info");
             }, 60000);
         }
 
-        // --- Notifications v8.9 Stable ---
-        function pushToast(msg, type) {
+        // --- Notification v9.1 ---
+        function sendToast(msg, type) {
             const stack = document.getElementById('notificationStack');
             const item = document.createElement('div');
             item.className = 'toast-item';
             let icon = 'fa-check-circle', color = '#00f2ff';
-            if (type === 'error') { icon = 'fa-biohazard'; color = '#f43f5e'; }
-            if (type === 'info') { icon = 'fa-terminal'; color = '#a855f7'; }
+            if (type === 'error') { icon = 'fa-radiation-alt'; color = '#f43f5e'; }
+            if (type === 'info') { icon = 'fa-brain'; color = '#a855f7'; }
             
             item.style.borderLeftColor = color;
             item.innerHTML = `
-                <div class="flex items-center gap-4">
-                    <i class="fas ${icon}" style="color: ${color}"></i>
-                    <div>
-                        <p class="text-[10px] font-black uppercase text-white tracking-widest">${msg}</p>
-                        <p class="text-[8px] text-gray-500 font-bold uppercase mt-1">Status: Stable v8.9</p>
-                    </div>
+                <i class="fas ${icon}" style="color: ${color}"></i>
+                <div>
+                    <p class="text-[10px] font-black uppercase text-white tracking-widest">${msg}</p>
+                    <p class="text-[8px] text-gray-500 font-bold uppercase mt-1">Status: Stable Core v9.1</p>
                 </div>
             `;
             stack.appendChild(item);
             setTimeout(() => {
                 item.style.opacity = '0';
-                item.style.transform = 'translateX(50px)';
-                item.style.transition = '0.4s ease';
-                setTimeout(() => item.remove(), 400);
-            }, 3500);
+                item.style.transform = 'translateX(60px)';
+                item.style.transition = '0.5s ease';
+                setTimeout(() => item.remove(), 500);
+            }, 4000);
         }
 
-        // --- Charting ---
-        function initChart() {
-            const ctx = document.getElementById('savingsChart').getContext('2d');
+        // --- Analytics v9.1 ---
+        function initAnalytics() {
+            const ctx = document.getElementById('chartCanvas').getContext('2d');
             chart = new Chart(ctx, {
                 type: 'line',
-                data: { labels: [], datasets: [{ label: 'Savings', data: [], borderColor: '#00f2ff', backgroundColor: 'rgba(0, 242, 255, 0.1)', fill: true, tension: 0.4 }] },
+                data: { labels: [], datasets: [{ label: 'Capital Flow', data: [], borderColor: '#00f2ff', backgroundColor: 'rgba(0, 242, 255, 0.05)', fill: true, tension: 0.4, borderWidth: 3, pointRadius: 4, pointBackgroundColor: '#00f2ff' }] },
                 options: {
                     responsive: true, maintainAspectRatio: false,
                     plugins: { legend: { display: false } },
                     scales: {
-                        y: { grid: { color: 'rgba(255,255,255,0.02)' }, ticks: { color: '#475569', font: { family: 'Kanit', weight: 'bold' } } },
-                        x: { grid: { display: false }, ticks: { color: '#475569', font: { family: 'Kanit', weight: 'bold' } } }
+                        y: { grid: { color: 'rgba(255,255,255,0.03)' }, ticks: { color: '#64748b', font: { family: 'Kanit', weight: 'bold', size: 10 } } },
+                        x: { grid: { display: false }, ticks: { color: '#64748b', font: { family: 'Kanit', weight: 'bold', size: 10 } } }
                     }
                 }
             });
         }
 
-        function updateStats() {
+        function updateAnalyticsData() {
             const count = state.history.length;
             const avg = count > 0 ? (state.totalSavings / count) : 0;
-            document.getElementById('statCount').innerText = count;
-            document.getElementById('statAvg').innerText = `฿ ${Math.round(avg).toLocaleString()}`;
+            document.getElementById('statTotalCount').innerText = count;
+            document.getElementById('statAvgVal').innerText = `฿ ${Math.round(avg).toLocaleString()}`;
+            document.getElementById('statMaxGoal').innerText = `฿ ${state.goal.toLocaleString()}`;
             
             if (chart && !document.getElementById('page-stats').classList.contains('hidden')) {
-                const map = {};
-                state.history.slice(-20).forEach(h => {
+                const historyMap = {};
+                state.history.slice(-25).forEach(h => {
                     const d = new Date(h.date).toLocaleDateString('th-TH', { day: 'numeric', month: 'short' });
-                    map[d] = (map[d] || 0) + h.amount;
+                    historyMap[d] = (historyMap[d] || 0) + h.amount;
                 });
-                const labels = Object.keys(map);
+                const labels = Object.keys(historyMap);
                 chart.data.labels = labels;
-                chart.data.datasets[0].data = labels.map(l => map[l]);
+                chart.data.datasets[0].data = labels.map(l => historyMap[l]);
                 chart.update();
             }
         }
 
-        function toggleSidebar() { document.getElementById('sidebar').classList.toggle('-translate-x-full'); }
+        function toggleSidebar() { document.getElementById('mobileSidebar').classList.toggle('-translate-x-full'); }
         function showPage(id) {
             document.querySelectorAll('.page-section').forEach(p => p.classList.add('hidden'));
             document.getElementById(`page-${id}`).classList.remove('hidden');
             document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('nav-active'));
-            const btn = document.getElementById(`btn-${id}`);
-            if (btn) btn.classList.add('nav-active');
-            if (id === 'stats') updateStats();
-            if (window.innerWidth < 1024) document.getElementById('sidebar').classList.add('-translate-x-full');
+            const activeBtn = document.getElementById(`nav-${id}`);
+            if (activeBtn) activeBtn.classList.add('nav-active');
+            if (id === 'stats') updateAnalyticsData();
+            if (window.innerWidth < 1024) document.getElementById('mobileSidebar').classList.add('-translate-x-full');
         }
     </script>
 </body>
