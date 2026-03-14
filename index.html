@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NovaSavePash + Meta AI V.X1-3 Final</title>
+    <title>NovaSavePash + Meta AI V.X1-5 Final</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
@@ -12,306 +12,379 @@
         :root {
             --primary: #00e5ff;
             --accent: #7000ff;
-            --bg-dark: #0a0f1d;
+            --bg-dark: #070b14;
         }
 
         body {
             font-family: 'Kanit', sans-serif;
             background-color: var(--bg-dark);
             color: #e2e8f0;
-            overflow-x: hidden;
             margin: 0;
-            user-select: none;
-            transition: background 0.5s ease;
+            overflow-x: hidden;
+            transition: all 0.4s ease;
         }
 
         .glass-card {
-            background: rgba(30, 41, 59, 0.5);
-            backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 1.5rem;
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 1.25rem;
         }
 
+        /* Sidebar Styling */
         .sidebar-v {
             width: 260px;
             height: 100vh;
             position: fixed;
             left: 0;
             top: 0;
-            background: rgba(15, 23, 42, 0.98);
-            border-right: 2px solid rgba(0, 229, 255, 0.1);
+            background: #0f172a;
+            border-right: 1px solid rgba(0, 229, 255, 0.2);
             z-index: 2000;
             transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
-
         .sidebar-hidden { transform: translateX(-100%); }
 
-        .mic-active { color: var(--primary) !important; filter: drop-shadow(0 0 8px var(--primary)); }
-        
-        .auto-update-overlay {
+        /* Animation & Effects */
+        @keyframes pulse-glow {
+            0% { box-shadow: 0 0 5px rgba(0, 229, 255, 0.2); }
+            50% { box-shadow: 0 0 20px rgba(0, 229, 255, 0.5); }
+            100% { box-shadow: 0 0 5px rgba(0, 229, 255, 0.2); }
+        }
+        .active-rank-card { animation: pulse-glow 2s infinite; border: 2px solid var(--primary) !important; }
+
+        /* Pin Overlay */
+        #authOverlay {
             position: fixed;
             inset: 0;
-            background: rgba(10, 15, 29, 0.95);
-            z-index: 3000;
-            display: none;
-            flex-direction: column;
+            background: #070b14;
+            z-index: 9999;
+            display: flex;
             align-items: center;
             justify-content: center;
         }
 
-        .offline-mode { filter: grayscale(0.4) contrast(1.1); background: #1a1a1a; }
+        .pin-dot {
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            border: 2px solid var(--primary);
+            transition: all 0.2s;
+        }
+        .pin-dot.filled { background: var(--primary); transform: scale(1.2); }
 
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: rgba(0, 229, 255, 0.2); border-radius: 10px; }
+        input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+
+        .chart-bar {
+            transition: height 1s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 4px 4px 0 0;
+        }
     </style>
 </head>
 <body id="appBody">
 
-    <!-- Auto Update UI (10 Seconds) -->
-    <div id="autoUpdateUI" class="auto-update-overlay">
-        <div class="text-cyan-400 text-7xl mb-6 animate-pulse"><i class="fas fa-microchip"></i></div>
-        <h2 class="text-3xl font-bold uppercase tracking-widest text-white">AI Upgrading Target</h2>
-        <p class="text-gray-400 mt-2 text-lg">วิเคราะห์และคำนวณเป้าหมายใหม่ (10 วินาที)</p>
-        <div class="mt-10 w-80 bg-gray-800 h-2 rounded-full overflow-hidden">
-            <div id="autoUpdateBar" class="h-full bg-gradient-to-r from-cyan-400 to-blue-500 w-0"></div>
+    <!-- Auth System (PIN) -->
+    <div id="authOverlay" class="hidden">
+        <div class="glass-card p-10 w-full max-w-sm text-center">
+            <div class="w-20 h-20 bg-cyan-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
+                <i class="fas fa-user-lock text-3xl text-cyan-400"></i>
+            </div>
+            <h2 id="pinTitle" class="text-2xl font-bold text-white mb-2">ยืนยันรหัส PIN</h2>
+            <p id="pinSub" class="text-gray-400 text-sm mb-8">กรุณากรอกรหัส 6 หลักเพื่อดำเนินการ</p>
+            
+            <div class="flex justify-center gap-3 mb-10">
+                <div class="pin-dot"></div>
+                <div class="pin-dot"></div>
+                <div class="pin-dot"></div>
+                <div class="pin-dot"></div>
+                <div class="pin-dot"></div>
+                <div class="pin-dot"></div>
+            </div>
+
+            <div class="grid grid-cols-3 gap-4 max-w-[240px] mx-auto">
+                <button onclick="pressPin(1)" class="w-14 h-14 rounded-full bg-white/5 hover:bg-white/10 text-xl font-bold transition">1</button>
+                <button onclick="pressPin(2)" class="w-14 h-14 rounded-full bg-white/5 hover:bg-white/10 text-xl font-bold transition">2</button>
+                <button onclick="pressPin(3)" class="w-14 h-14 rounded-full bg-white/5 hover:bg-white/10 text-xl font-bold transition">3</button>
+                <button onclick="pressPin(4)" class="w-14 h-14 rounded-full bg-white/5 hover:bg-white/10 text-xl font-bold transition">4</button>
+                <button onclick="pressPin(5)" class="w-14 h-14 rounded-full bg-white/5 hover:bg-white/10 text-xl font-bold transition">5</button>
+                <button onclick="pressPin(6)" class="w-14 h-14 rounded-full bg-white/5 hover:bg-white/10 text-xl font-bold transition">6</button>
+                <button onclick="pressPin(7)" class="w-14 h-14 rounded-full bg-white/5 hover:bg-white/10 text-xl font-bold transition">7</button>
+                <button onclick="pressPin(8)" class="w-14 h-14 rounded-full bg-white/5 hover:bg-white/10 text-xl font-bold transition">8</button>
+                <button onclick="pressPin(9)" class="w-14 h-14 rounded-full bg-white/5 hover:bg-white/10 text-xl font-bold transition">9</button>
+                <button onclick="clearPin()" class="w-14 h-14 rounded-full text-rose-500 hover:bg-rose-500/10 flex items-center justify-center"><i class="fas fa-backspace"></i></button>
+                <button onclick="pressPin(0)" class="w-14 h-14 rounded-full bg-white/5 hover:bg-white/10 text-xl font-bold transition">0</button>
+                <button class="w-14 h-14 rounded-full text-gray-600 cursor-default">OK</button>
+            </div>
         </div>
     </div>
 
-    <!-- Sidebar Menu (แนวตั้ง) -->
+    <!-- Sidebar Menu -->
     <aside id="sidebarV" class="sidebar-v sidebar-hidden flex flex-col p-6 shadow-2xl">
         <div class="flex items-center gap-3 mb-10 p-2">
-            <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center text-slate-900 text-2xl font-black shadow-lg">N</div>
+            <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-cyan-400 to-blue-600 flex items-center justify-center text-slate-900 text-2xl font-black">N</div>
             <div>
-                <h2 class="font-bold text-xl leading-none text-white">NovaSave</h2>
-                <span class="text-[10px] text-cyan-400 font-bold tracking-widest uppercase">Version X1-3 Final</span>
+                <h2 class="font-bold text-xl leading-none text-white tracking-tighter">NovaSave</h2>
+                <span class="text-[10px] text-cyan-400 font-bold uppercase tracking-widest">Version X1-5 Final</span>
             </div>
         </div>
 
         <nav class="space-y-2 flex-1">
-            <button onclick="showPage('home')" class="w-full flex items-center gap-4 p-4 rounded-2xl hover:bg-white/5 transition group text-left">
-                <i class="fas fa-home w-6 text-gray-500 group-hover:text-cyan-400"></i>
-                <span class="text-base font-medium text-white">หน้าหลัก</span>
+            <button onclick="showPage('home')" class="w-full flex items-center gap-4 p-4 rounded-xl hover:bg-white/5 transition group text-left">
+                <i class="fas fa-th-large w-5 text-gray-500 group-hover:text-cyan-400"></i>
+                <span class="font-medium text-sm text-white">หน้าหลัก</span>
             </button>
-            <button onclick="showPage('pockets')" class="w-full flex items-center gap-4 p-4 rounded-2xl hover:bg-white/5 transition group text-left">
-                <i class="fas fa-wallet w-6 text-gray-500 group-hover:text-purple-400"></i>
-                <span class="text-base font-medium text-white">Cloud Pockets</span>
+            <button onclick="showPage('pockets')" class="w-full flex items-center gap-4 p-4 rounded-xl hover:bg-white/5 transition group text-left">
+                <i class="fas fa-wallet w-5 text-gray-500 group-hover:text-purple-400"></i>
+                <span class="font-medium text-sm text-white">Cloud Pocket</span>
             </button>
-            <button onclick="showPage('ranks')" class="w-full flex items-center gap-4 p-4 rounded-2xl hover:bg-white/5 transition group text-left">
-                <i class="fas fa-award w-6 text-gray-500 group-hover:text-yellow-400"></i>
-                <span class="text-base font-medium text-white">ยศนักออม</span>
+            <button onclick="showPage('ranks')" class="w-full flex items-center gap-4 p-4 rounded-xl hover:bg-white/5 transition group text-left">
+                <i class="fas fa-trophy w-5 text-gray-500 group-hover:text-yellow-400"></i>
+                <span class="font-medium text-sm text-white">ลำดับยศ</span>
+            </button>
+            <button onclick="logout()" class="w-full flex items-center gap-4 p-4 rounded-xl hover:bg-rose-500/10 transition group text-left mt-10">
+                <i class="fas fa-sign-out-alt w-5 text-gray-500 group-hover:text-rose-500"></i>
+                <span class="font-medium text-sm text-rose-400">ออกจากระบบ</span>
             </button>
         </nav>
 
-        <div class="glass-card p-5 mt-auto bg-slate-800/40">
-            <div class="flex items-center justify-between mb-3">
-                <span class="text-[10px] font-bold uppercase text-gray-500 tracking-wider">Voice Processor</span>
-                <div id="voiceIndicatorDot" class="w-2.5 h-2.5 rounded-full bg-gray-600"></div>
+        <div class="glass-card p-4 mt-auto">
+            <div class="flex items-center gap-2 mb-2">
+                <div class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></div>
+                <span class="text-[10px] font-bold text-cyan-400 uppercase tracking-widest">Local AI Mode</span>
             </div>
-            <div class="space-y-1">
-                <p class="text-[9px] text-cyan-400/80 italic">"สั่งงานด้วยเสียงเพื่อเปิด/ปิดเมนู"</p>
-            </div>
+            <p class="text-[10px] text-gray-500">ทำงานแยกส่วน 100% ไม่เชื่อมต่อ API</p>
         </div>
     </aside>
 
-    <!-- Top Header -->
-    <header class="fixed top-0 left-0 right-0 h-20 px-6 flex justify-between items-center z-[1000] bg-slate-900/80 backdrop-blur-xl border-b border-white/5">
-        <div class="flex items-center gap-6">
-            <button id="sidebarToggle" class="w-10 h-10 flex items-center justify-center text-2xl text-cyan-400 hover:scale-110 transition">
-                <i class="fas fa-bars-staggered"></i>
+    <!-- Top Navigation -->
+    <header class="fixed top-0 left-0 right-0 h-20 px-6 flex justify-between items-center z-[1500] bg-slate-950/50 backdrop-blur-md border-b border-white/5">
+        <div class="flex items-center gap-4">
+            <button id="sidebarBtn" class="w-10 h-10 rounded-xl hover:bg-white/5 flex items-center justify-center text-xl text-cyan-400 transition">
+                <i class="fas fa-bars"></i>
             </button>
             <div>
-                <h3 id="greetingText" class="text-base font-bold text-white leading-none mb-1">...</h3>
-                <p id="liveDate" class="text-[11px] text-cyan-400 font-mono tracking-wider"></p>
+                <h4 id="greeting" class="text-white font-bold leading-none">สวัสดี...</h4>
+                <p id="clock" class="text-[11px] text-cyan-400/80 font-mono mt-1"></p>
             </div>
         </div>
-
-        <div class="flex items-center gap-3">
-            <div id="statusIndicator" class="flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-800/50 border border-white/5">
-                <div id="statusDot" class="w-2 h-2 rounded-full bg-emerald-500"></div>
-                <span id="statusText" class="text-[10px] font-bold uppercase tracking-widest text-white">Online</span>
+        <div class="flex items-center gap-4">
+            <div id="statusLabel" class="flex flex-col items-end">
+                <span class="text-[10px] font-black text-gray-500 uppercase tracking-tighter">Current Rank</span>
+                <span id="rankBadgeTop" class="text-xs font-bold text-cyan-400">BRONZE</span>
             </div>
-            
-            <div class="flex items-center bg-slate-800/50 rounded-xl p-1 border border-white/5">
-                <button id="voiceBtn" class="w-10 h-10 rounded-lg flex items-center justify-center text-gray-400 hover:text-cyan-400 transition relative">
-                    <i class="fas fa-microphone"></i>
-                </button>
-                <button id="toggleMicLock" class="w-10 h-10 rounded-lg flex items-center justify-center text-rose-500 hover:bg-rose-500/10 transition" title="ป้องกันไมค์เปิดอัตโนมัติ">
-                    <i class="fas fa-power-off"></i>
-                </button>
+            <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center shadow-lg shadow-cyan-500/20">
+                <i class="fas fa-user-shield text-slate-950"></i>
             </div>
         </div>
     </header>
 
-    <!-- Main Workspace -->
-    <main id="workspace" class="pt-28 pb-10 px-4 md:px-10 max-w-6xl mx-auto transition-all duration-500">
-        
-        <!-- DASHBOARD PAGE -->
-        <section id="page-home" class="page-view space-y-8">
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <!-- Balance Card -->
-                <div class="lg:col-span-2 glass-card p-8 flex flex-col justify-between border-l-4 border-cyan-400 relative overflow-hidden">
-                    <div class="absolute -right-10 -top-10 text-[12rem] text-white/5 rotate-12 pointer-events-none"><i class="fas fa-vault"></i></div>
-                    <div>
-                        <div class="flex justify-between items-center mb-6">
-                            <span class="text-xs font-bold uppercase text-gray-400 tracking-widest">ยอดออมสะสมสุทธิ</span>
-                            <span id="currentRankDisplay" class="px-4 py-1.5 rounded-full bg-cyan-500/10 text-cyan-400 text-[11px] font-black border border-cyan-500/20 uppercase tracking-tighter">BRONZE</span>
+    <!-- Content Area -->
+    <main id="mainContent" class="pt-24 pb-10 px-4 transition-all duration-500">
+        <div class="max-w-5xl mx-auto space-y-6">
+
+            <!-- DASHBOARD PAGE -->
+            <section id="page-home" class="page-view space-y-6">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- Balance -->
+                    <div class="lg:col-span-2 glass-card p-8 flex flex-col justify-between relative overflow-hidden min-h-[240px]">
+                        <div class="absolute right-0 top-0 p-4 opacity-5 text-9xl pointer-events-none"><i class="fas fa-coins"></i></div>
+                        <div>
+                            <span class="text-xs font-bold text-gray-500 uppercase tracking-widest">ยอดออมสุทธิทั้งหมด</span>
+                            <h1 id="displayBalance" class="text-5xl md:text-6xl font-black text-white mt-2 tracking-tighter">฿ 0.00</h1>
                         </div>
-                        <h1 id="mainBalance" class="text-6xl md:text-7xl font-black tracking-tighter text-white">฿ 0.00</h1>
+                        <div class="mt-8">
+                            <div class="flex justify-between text-xs font-bold mb-2">
+                                <span class="text-gray-400 uppercase tracking-widest">เป้าหมายสะสม: <span id="displayTarget" class="text-white">฿ 10,000</span></span>
+                                <span id="displayPercent" class="text-cyan-400">0%</span>
+                            </div>
+                            <div class="w-full h-3 bg-slate-800 rounded-full overflow-hidden p-0.5 border border-white/5">
+                                <div id="progressBar" class="h-full bg-gradient-to-r from-cyan-500 to-blue-500 rounded-full w-0 transition-all duration-1000"></div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="mt-12">
-                        <div class="flex justify-between items-end mb-3">
-                            <div class="text-[11px] font-bold text-gray-400 uppercase tracking-widest">เป้าหมาย: <span id="targetText" class="text-white">฿ 10,000</span></div>
-                            <div id="percentText" class="text-xl font-black text-cyan-400">0%</div>
+
+                    <!-- AI Insights -->
+                    <div class="glass-card p-6 border-t-4 border-purple-500 flex flex-col justify-between min-h-[240px]">
+                        <div>
+                            <div class="flex items-center gap-3 mb-4">
+                                <div class="w-10 h-10 rounded-xl bg-purple-500/20 flex items-center justify-center text-purple-400"><i class="fas fa-brain"></i></div>
+                                <span class="text-xs font-bold text-white uppercase tracking-widest">AI Analyzer X1</span>
+                            </div>
+                            <p id="aiInsight" class="text-sm text-gray-400 leading-relaxed italic">"ยินดีต้อนรับครับ เวอร์ชั่น X1-5 พร้อมวิเคราะห์ข้อมูลแบบออฟไลน์แล้ว"</p>
                         </div>
-                        <div class="w-full bg-slate-800 h-4 rounded-full overflow-hidden p-0.5 border border-white/5">
-                            <div id="mainProgressBar" class="h-full bg-gradient-to-r from-cyan-500 via-blue-500 to-indigo-600 rounded-full w-0 transition-all duration-1000"></div>
+                        
+                        <div>
+                            <div class="flex justify-between items-end gap-1 h-16">
+                                <div id="bar-1" class="chart-bar bg-cyan-500/20 w-full h-[30%]"></div>
+                                <div id="bar-2" class="chart-bar bg-cyan-500/20 w-full h-[50%]"></div>
+                                <div id="bar-3" class="chart-bar bg-cyan-500/20 w-full h-[40%]"></div>
+                                <div id="bar-4" class="chart-bar bg-cyan-500/20 w-full h-[70%]"></div>
+                                <div id="bar-5" class="chart-bar bg-cyan-500/20 w-full h-[60%]"></div>
+                                <div id="bar-6" class="chart-bar bg-cyan-500/20 w-full h-[85%]"></div>
+                                <div id="bar-7" class="chart-bar bg-cyan-500 w-full h-[45%]"></div>
+                            </div>
+                            <div class="flex justify-between text-[8px] text-gray-500 font-bold mt-2 uppercase">
+                                <span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span><span>S</span>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- AI Analysis -->
-                <div class="glass-card p-8 border-t-4 border-purple-500 flex flex-col justify-between">
-                    <div>
-                        <div class="flex items-center gap-3 mb-6">
-                            <div class="w-12 h-12 rounded-2xl bg-purple-500/20 flex items-center justify-center text-purple-400 text-xl shadow-inner"><i class="fas fa-brain"></i></div>
-                            <span class="text-xs font-bold uppercase tracking-widest text-white">Meta AI Analysis</span>
-                        </div>
-                        <p id="aiAdvice" class="text-base text-gray-300 leading-relaxed italic font-light">"กำลังวิเคราะห์พฤติกรรมการออม..."</p>
-                    </div>
-                    <div class="mt-8 pt-6 border-t border-white/5 flex justify-between text-[10px] text-gray-500 uppercase font-black">
-                        <span>AI Engine: V.X1 Offline</span>
-                        <span class="text-cyan-400">Secure</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Input Box -->
-            <div class="glass-card p-8 border-b-4 border-emerald-500">
-                <div class="flex flex-col md:flex-row gap-6 items-center">
-                    <div class="flex-1 w-full">
-                        <label class="text-[11px] font-bold uppercase text-gray-500 mb-3 block tracking-widest">ระบุยอดเงิน (ขั้นต่ำ 50 บาท)</label>
-                        <div class="relative">
+                <!-- Input Section -->
+                <div class="glass-card p-8 border-b-4 border-cyan-500">
+                    <label class="text-[10px] font-bold text-gray-500 uppercase tracking-widest block mb-4">ระบุยอดเงิน (ขั้นต่ำ 50 บาท)</label>
+                    <div class="flex flex-col md:flex-row gap-4">
+                        <div class="relative flex-1">
                             <span class="absolute left-6 top-1/2 -translate-y-1/2 text-2xl font-bold text-gray-600">฿</span>
-                            <input type="number" id="saveAmount" placeholder="0.00" class="w-full bg-slate-900/50 border-2 border-white/10 rounded-3xl p-6 pl-14 text-3xl font-black focus:outline-none focus:border-cyan-500/50 transition-all text-white">
+                            <input type="number" id="inputAmount" placeholder="0.00" class="w-full bg-slate-900 border border-white/10 rounded-2xl p-5 pl-12 text-3xl font-black text-white focus:outline-none focus:border-cyan-500 transition-all">
                         </div>
-                        <div class="flex gap-2 mt-4">
-                            <button onclick="quickAdd(100)" class="px-4 py-2 bg-slate-800 rounded-xl text-xs font-bold text-white hover:bg-cyan-500/20 transition border border-white/5">+100</button>
-                            <button onclick="quickAdd(500)" class="px-4 py-2 bg-slate-800 rounded-xl text-xs font-bold text-white hover:bg-cyan-500/20 transition border border-white/5">+500</button>
-                            <button onclick="quickAdd(1000)" class="px-4 py-2 bg-slate-800 rounded-xl text-xs font-bold text-white hover:bg-cyan-500/20 transition border border-white/5">+1,000</button>
+                        <div class="flex gap-2">
+                            <button onclick="setAmount(100)" class="flex-1 px-4 md:px-6 bg-white/5 hover:bg-white/10 rounded-2xl font-bold transition text-sm">100</button>
+                            <button onclick="setAmount(500)" class="flex-1 px-4 md:px-6 bg-white/5 hover:bg-white/10 rounded-2xl font-bold transition text-sm">500</button>
+                            <button onclick="setAmount(1000)" class="flex-1 px-4 md:px-6 bg-white/5 hover:bg-white/10 rounded-2xl font-bold transition text-sm">1000</button>
+                        </div>
+                        <button onclick="handleSave()" class="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-black px-12 py-5 rounded-2xl text-lg shadow-xl shadow-cyan-500/20 transition-all">บันทึก</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- POCKETS PAGE -->
+            <section id="page-pockets" class="page-view hidden space-y-6">
+                <div class="flex items-center justify-between">
+                    <h2 class="text-3xl font-black text-white flex items-center gap-3"><i class="fas fa-cloud text-cyan-400"></i> Cloud Pocket System</h2>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="glass-card p-8 border-l-4 border-cyan-400 flex flex-col h-full">
+                        <div class="flex justify-between items-start mb-6">
+                            <div class="w-12 h-12 rounded-2xl bg-cyan-500/10 flex items-center justify-center text-cyan-400 text-2xl shadow-lg"><i class="fas fa-piggy-bank"></i></div>
+                            <span class="text-[10px] font-black text-cyan-500 uppercase bg-cyan-500/10 px-2 py-1 rounded">Main Saver 70%</span>
+                        </div>
+                        <p class="text-gray-500 text-[10px] font-bold uppercase tracking-widest">ออมหลัก</p>
+                        <h3 id="pocket-main" class="text-3xl font-black text-white mt-1">฿ 0.00</h3>
+                    </div>
+                    <div class="glass-card p-8 border-l-4 border-purple-400 flex flex-col h-full">
+                        <div class="flex justify-between items-start mb-6">
+                            <div class="w-12 h-12 rounded-2xl bg-purple-500/10 flex items-center justify-center text-purple-400 text-2xl shadow-lg"><i class="fas fa-chart-line"></i></div>
+                            <span class="text-[10px] font-black text-purple-500 uppercase bg-purple-500/10 px-2 py-1 rounded">Invest 20%</span>
+                        </div>
+                        <p class="text-gray-500 text-[10px] font-bold uppercase tracking-widest">การลงทุน</p>
+                        <h3 id="pocket-invest" class="text-3xl font-black text-white mt-1">฿ 0.00</h3>
+                    </div>
+                    <div class="glass-card p-8 border-l-4 border-emerald-400 flex flex-col h-full">
+                        <div class="flex justify-between items-start mb-6">
+                            <div class="w-12 h-12 rounded-2xl bg-emerald-500/10 flex items-center justify-center text-emerald-400 text-2xl shadow-lg"><i class="fas fa-first-aid"></i></div>
+                            <span class="text-[10px] font-black text-emerald-500 uppercase bg-emerald-500/10 px-2 py-1 rounded">Emergency 10%</span>
+                        </div>
+                        <p class="text-gray-500 text-[10px] font-bold uppercase tracking-widest">ทุนสำรองฉุกเฉิน</p>
+                        <h3 id="pocket-emerge" class="text-3xl font-black text-white mt-1">฿ 0.00</h3>
+                    </div>
+                </div>
+            </section>
+
+            <!-- RANKS PAGE -->
+            <section id="page-ranks" class="page-view hidden">
+                <div class="glass-card p-10 text-center relative overflow-hidden">
+                    <div class="absolute inset-0 opacity-5 pointer-events-none flex items-center justify-center">
+                        <i id="rankBgIcon" class="fas fa-shield-alt text-[20rem]"></i>
+                    </div>
+                    <div id="rankIconMain" class="text-9xl mb-6 text-cyan-400 transition-all duration-700"><i class="fas fa-shield-alt"></i></div>
+                    <h2 id="rankTitleMain" class="text-5xl font-black text-white uppercase tracking-tighter mb-2">BRONZE SAVER</h2>
+                    <p id="rankNext" class="text-gray-400 mb-10 tracking-wide">ออมเพิ่มอีกเพื่อให้ถึงระดับถัดไป</p>
+                    
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto">
+                        <div id="r-BRONZE" class="p-6 rounded-2xl bg-white/5 border border-white/5 opacity-30 transition-all flex flex-col items-center">
+                            <i class="fas fa-shield-alt text-3xl mb-3"></i>
+                            <span class="text-xs font-bold uppercase">BRONZE</span>
+                            <span class="text-[8px] text-gray-500 mt-1">เริ่มต้น</span>
+                        </div>
+                        <div id="r-SILVER" class="p-6 rounded-2xl bg-white/5 border border-white/5 opacity-30 transition-all flex flex-col items-center">
+                            <i class="fas fa-medal text-3xl mb-3"></i>
+                            <span class="text-xs font-bold uppercase">SILVER</span>
+                            <span class="text-[8px] text-gray-500 mt-1">฿ 10,000+</span>
+                        </div>
+                        <div id="r-GOLD" class="p-6 rounded-2xl bg-white/5 border border-white/5 opacity-30 transition-all flex flex-col items-center">
+                            <i class="fas fa-crown text-3xl mb-3"></i>
+                            <span class="text-xs font-bold uppercase">GOLD</span>
+                            <span class="text-[8px] text-gray-500 mt-1">฿ 50,000+</span>
+                        </div>
+                        <div id="r-LEGEND" class="p-6 rounded-2xl bg-white/5 border border-white/5 opacity-30 transition-all flex flex-col items-center">
+                            <i class="fas fa-dragon text-3xl mb-3"></i>
+                            <span class="text-xs font-bold uppercase">LEGEND</span>
+                            <span class="text-[8px] text-gray-500 mt-1">฿ 100,000+</span>
                         </div>
                     </div>
-                    <button onclick="processSave()" class="w-full md:w-auto bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-black px-14 py-6 rounded-3xl transition-all shadow-xl shadow-cyan-500/20 text-lg">บันทึกยอดออม</button>
                 </div>
-            </div>
-        </section>
+            </section>
 
-        <!-- CLOUD POCKETS PAGE -->
-        <section id="page-pockets" class="page-view hidden space-y-8">
-            <h2 class="text-3xl font-black flex items-center gap-4 text-white"><i class="fas fa-layer-group text-cyan-400"></i> Cloud Pocket System</h2>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div class="glass-card p-8 border-l-4 border-cyan-400">
-                    <div class="flex justify-between items-start mb-6">
-                        <div class="w-12 h-12 rounded-2xl bg-cyan-400/10 flex items-center justify-center text-cyan-400"><i class="fas fa-piggy-bank"></i></div>
-                        <span class="text-[10px] font-black uppercase text-cyan-400 bg-cyan-400/5 px-3 py-1 rounded-full">Primary (70%)</span>
-                    </div>
-                    <p id="pocket-main" class="text-4xl font-black text-white">฿ 0.00</p>
-                </div>
-                <div class="glass-card p-8 border-l-4 border-purple-400">
-                    <div class="flex justify-between items-start mb-6">
-                        <div class="w-12 h-12 rounded-2xl bg-purple-400/10 flex items-center justify-center text-purple-400"><i class="fas fa-chart-line"></i></div>
-                        <span class="text-[10px] font-black uppercase text-purple-400 bg-purple-400/5 px-3 py-1 rounded-full">Investment (20%)</span>
-                    </div>
-                    <p id="pocket-invest" class="text-4xl font-black text-white">฿ 0.00</p>
-                </div>
-                <div class="glass-card p-8 border-l-4 border-emerald-400">
-                    <div class="flex justify-between items-start mb-6">
-                        <div class="w-12 h-12 rounded-2xl bg-emerald-400/10 flex items-center justify-center text-emerald-400"><i class="fas fa-briefcase-medical"></i></div>
-                        <span class="text-[10px] font-black uppercase text-emerald-400 bg-emerald-400/5 px-3 py-1 rounded-full">Emergency (10%)</span>
-                    </div>
-                    <p id="pocket-emergency" class="text-4xl font-black text-white">฿ 0.00</p>
-                </div>
-            </div>
-        </section>
-
-        <!-- RANKS PAGE -->
-        <section id="page-ranks" class="page-view hidden">
-            <div class="glass-card p-12 text-center relative overflow-hidden">
-                <div id="rankIcon" class="text-9xl mb-8 transition-all duration-700 text-cyan-400"><i class="fas fa-shield-halved"></i></div>
-                <h2 id="rankTitle" class="text-5xl font-black mb-4 uppercase tracking-tighter text-white">Bronze Saver</h2>
-                <p id="rankDesc" class="text-gray-400 text-lg mb-12 max-w-md mx-auto">สะสมเงินออมเพื่อเลื่อนระดับยศและปลดล็อกฟีเจอร์ระดับสูง</p>
-                
-                <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
-                    <div class="p-6 rounded-2xl bg-slate-800/40 border-2 border-transparent transition-all" id="r-bronze">
-                        <i class="fas fa-shield-halved block mb-3 text-2xl"></i>
-                        <span class="text-xs font-bold">BRONZE</span><br><span class="text-[10px] text-gray-500">เริ่มต้น</span>
-                    </div>
-                    <div class="p-6 rounded-2xl bg-slate-800/40 border-2 border-transparent transition-all" id="r-silver">
-                        <i class="fas fa-medal block mb-3 text-2xl"></i>
-                        <span class="text-xs font-bold">SILVER</span><br><span class="text-[10px] text-gray-500">10K+</span>
-                    </div>
-                    <div class="p-6 rounded-2xl bg-slate-800/40 border-2 border-transparent transition-all" id="r-gold">
-                        <i class="fas fa-crown block mb-3 text-2xl"></i>
-                        <span class="text-xs font-bold">GOLD</span><br><span class="text-[10px] text-gray-500">50K+</span>
-                    </div>
-                    <div class="p-6 rounded-2xl bg-slate-800/40 border-2 border-transparent transition-all" id="r-legend">
-                        <i class="fas fa-dragon block mb-3 text-2xl"></i>
-                        <span class="text-xs font-bold">LEGEND</span><br><span class="text-[10px] text-gray-500">100K+</span>
-                    </div>
-                    <div class="p-6 rounded-2xl bg-slate-800/40 border-2 border-transparent transition-all" id="r-radiant">
-                        <i class="fas fa-sun block mb-3 text-2xl"></i>
-                        <span class="text-xs font-bold">RADIANT</span><br><span class="text-[10px] text-gray-500">500K+</span>
-                    </div>
-                </div>
-            </div>
-        </section>
+        </div>
     </main>
 
-    <!-- Toast Notification System -->
-    <div id="toast" class="fixed bottom-10 right-10 z-[5000] transform translate-y-40 transition-all duration-500">
-        <div class="glass-card px-8 py-5 flex items-center gap-5 bg-slate-900 border-cyan-500 shadow-2xl">
-            <div id="toastIcon" class="w-12 h-12 rounded-full bg-cyan-500/20 flex items-center justify-center text-cyan-400 text-xl"><i class="fas fa-info-circle"></i></div>
-            <div>
-                <h4 class="text-[10px] font-black uppercase tracking-[0.2em] text-cyan-500 mb-1">System Message</h4>
-                <p id="toastMsg" class="text-base text-white font-medium">ทำรายการสำเร็จ</p>
-            </div>
+    <!-- Auto-Upgrade AI Progress -->
+    <div id="upgradeOverlay" class="fixed inset-0 bg-slate-950/95 z-[5000] hidden flex-col items-center justify-center p-8 text-center">
+        <div class="w-24 h-24 mb-6 relative">
+            <svg class="w-full h-full animate-spin text-cyan-500" viewBox="0 0 100 100">
+                <circle cx="50" cy="50" r="45" fill="none" stroke="currentColor" stroke-width="2" stroke-dasharray="100" stroke-linecap="round"></circle>
+            </svg>
+            <div class="absolute inset-0 flex items-center justify-center text-cyan-400 text-3xl"><i class="fas fa-microchip"></i></div>
+        </div>
+        <h2 class="text-3xl font-black text-white mb-2 uppercase tracking-widest">Meta AI Calculating...</h2>
+        <p class="text-gray-400 max-w-sm mb-10 italic">"ยินดีด้วยที่คุณบรรลุเป้าหมาย 100% AI กำลังวิเคราะห์ยอดออมเฉลี่ยเพื่อตั้งเป้าหมายใหม่ใน 10 วินาที..."</p>
+        <div class="w-full max-w-sm h-1.5 bg-slate-900 rounded-full overflow-hidden border border-white/5">
+            <div id="upgradeBar" class="h-full bg-cyan-400 w-0 transition-all duration-100 linear"></div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed bottom-10 right-10 transform translate-y-40 transition-all duration-500 z-[6000]">
+        <div class="glass-card px-6 py-4 flex items-center gap-4 border-cyan-500/50 shadow-2xl">
+            <div id="toastIcon" class="w-10 h-10 rounded-full bg-cyan-500/20 flex items-center justify-center text-cyan-400 shadow-lg"><i class="fas fa-info-circle"></i></div>
+            <p id="toastMsg" class="text-white font-medium text-sm"></p>
         </div>
     </div>
 
     <script>
-        // --- Core State Management ---
-        const STORAGE_KEY = 'novasave_vx1_3_final_stable';
+        // --- Core Application State ---
         let appState = {
+            isSetup: false,
+            pin: '',
+            isLoggedIn: false,
             balance: 0,
             target: 10000,
-            pockets: { main: 0, invest: 0, emergency: 0 },
+            pockets: { main: 0, invest: 0, emerge: 0 },
             history: [],
-            isOnline: true,
             rank: 'BRONZE',
-            micLocked: false
+            setupStep: 1, // Step 1: First PIN, Step 2: Confirm PIN
+            tempPin: ''
         };
 
-        let recognition = null;
-        let micActive = false;
+        const STORAGE_KEY = 'novasave_v_x1_5_final_prod';
+        let pinBuffer = '';
         let sidebarOpen = false;
-        let isAutoUpdating = false;
 
-        // --- Initialization ---
-        window.addEventListener('load', () => {
-            loadData();
-            initVoice();
-            startTime();
-            updateUI();
-            checkAutoUpgrade();
-            setInterval(runLocalAI, 30000);
-            setMode(appState.isOnline);
-        });
+        // --- Lifecycle & Initialization ---
+        window.onload = () => {
+            loadPersistedData();
+            initInterface();
+        };
 
-        function loadData() {
+        function loadPersistedData() {
             const saved = localStorage.getItem(STORAGE_KEY);
             if (saved) {
-                appState = { ...appState, ...JSON.parse(saved) };
+                const data = JSON.parse(saved);
+                // Keep data but force session login check
+                appState = { ...appState, ...data };
+                
+                if (appState.isLoggedIn) {
+                    // Session active, enter main app
+                    hideAuth();
+                    startAppLogic();
+                } else {
+                    // PIN Setup done, show login
+                    showAuth('login');
+                }
+            } else {
+                // First time setup
+                showAuth('setup');
             }
         }
 
@@ -319,267 +392,307 @@
             localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
         }
 
-        // --- Clock & Greeting (Dynamic) ---
-        function startTime() {
-            const dateEl = document.getElementById('liveDate');
-            const greetEl = document.getElementById('greetingText');
+        // --- Auth & PIN System ---
+        function showAuth(mode) {
+            const overlay = document.getElementById('authOverlay');
+            overlay.classList.remove('hidden');
+            const title = document.getElementById('pinTitle');
+            const sub = document.getElementById('pinSub');
+            
+            if (mode === 'setup') {
+                title.innerText = appState.setupStep === 1 ? 'ตั้งรหัส PIN 6 หลัก' : 'ยืนยันรหัส PIN อีกครั้ง';
+                sub.innerText = 'รหัสนี้ไม่สามารถแก้ไขได้ในภายหลัง';
+            } else {
+                title.innerText = 'เข้าสู่ระบบ NovaSave';
+                sub.innerText = 'กรุณากรอกรหัส PIN 6 หลักของคุณ';
+            }
+            resetPinDots();
+        }
+
+        function hideAuth() {
+            document.getElementById('authOverlay').classList.add('hidden');
+        }
+
+        function pressPin(n) {
+            if (pinBuffer.length < 6) {
+                pinBuffer += n;
+                updatePinDots();
+                if (pinBuffer.length === 6) {
+                    setTimeout(processPinSubmit, 300);
+                }
+            }
+        }
+
+        function clearPin() {
+            pinBuffer = pinBuffer.slice(0, -1);
+            updatePinDots();
+        }
+
+        function updatePinDots() {
+            const dots = document.querySelectorAll('.pin-dot');
+            dots.forEach((d, i) => {
+                if (i < pinBuffer.length) d.classList.add('filled');
+                else d.classList.remove('filled');
+            });
+        }
+
+        function resetPinDots() {
+            pinBuffer = '';
+            updatePinDots();
+        }
+
+        function processPinSubmit() {
+            if (!appState.isSetup) {
+                // Setup Mode
+                if (appState.setupStep === 1) {
+                    appState.tempPin = pinBuffer;
+                    appState.setupStep = 2;
+                    resetPinDots();
+                    showAuth('setup');
+                    notify('กรุณายืนยันรหัสผ่านอีกครั้ง', 'fa-key');
+                } else {
+                    if (pinBuffer === appState.tempPin) {
+                        appState.pin = pinBuffer;
+                        appState.isSetup = true;
+                        appState.isLoggedIn = true;
+                        saveData();
+                        notify('ตั้งรหัสและเข้าสู่ระบบสำเร็จ', 'fa-check-circle');
+                        hideAuth();
+                        startAppLogic();
+                    } else {
+                        appState.setupStep = 1;
+                        appState.tempPin = '';
+                        resetPinDots();
+                        showAuth('setup');
+                        notify('รหัสไม่ตรงกัน เริ่มต้นใหม่ครับ', 'fa-times-circle');
+                    }
+                }
+            } else {
+                // Login Mode
+                if (pinBuffer === appState.pin) {
+                    appState.isLoggedIn = true;
+                    saveData();
+                    notify('ยินดีต้อนรับกลับครับ', 'fa-unlock');
+                    hideAuth();
+                    startAppLogic();
+                } else {
+                    notify('รหัส PIN ไม่ถูกต้อง', 'fa-shield-alt');
+                    resetPinDots();
+                }
+            }
+        }
+
+        function logout() {
+            appState.isLoggedIn = false;
+            saveData();
+            window.location.reload();
+        }
+
+        // --- Main App Logic ---
+        function startAppLogic() {
+            updateUI();
+            runClock();
+            updateAIInsight();
+            
+            // Sidebar Toggle
+            document.getElementById('sidebarBtn').onclick = () => {
+                sidebarOpen = !sidebarOpen;
+                const sidebar = document.getElementById('sidebarV');
+                const main = document.getElementById('mainContent');
+                if (sidebarOpen) {
+                    sidebar.classList.remove('sidebar-hidden');
+                    if (window.innerWidth > 1024) main.style.paddingLeft = '280px';
+                } else {
+                    sidebar.classList.add('sidebar-hidden');
+                    main.style.paddingLeft = '1rem';
+                }
+            };
+        }
+
+        function runClock() {
+            const clockEl = document.getElementById('clock');
+            const greetEl = document.getElementById('greeting');
             
             const tick = () => {
                 const now = new Date();
-                dateEl.innerText = now.toLocaleDateString('th-TH', { 
+                clockEl.innerText = now.toLocaleDateString('th-TH', { 
                     weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
                     hour: '2-digit', minute: '2-digit', second: '2-digit'
                 });
 
                 const hr = now.getHours();
-                let msg = "สวัสดีตอนค่ำครับ";
-                if (hr >= 5 && hr < 9) msg = "สวัสดีตอนเช้าครับ";
-                else if (hr >= 9 && hr < 11) msg = "สวัสดีตอนสายครับ";
-                else if (hr >= 11 && hr < 13) msg = "สวัสดีตอนเที่ยงครับ";
-                else if (hr >= 13 && hr < 17) msg = "สวัสดีตอนบ่ายครับ";
-                else if (hr >= 17 && hr < 20) msg = "สวัสดีตอนเย็นครับ";
-                greetEl.innerText = msg;
+                let greet = "สวัสดีตอนดึกครับ";
+                if (hr >= 5 && hr < 11) greet = "สวัสดีตอนเช้าครับ";
+                else if (hr >= 11 && hr < 14) greet = "สวัสดีตอนสายครับ";
+                else if (hr >= 14 && hr < 17) greet = "สวัสดีตอนบ่ายครับ";
+                else if (hr >= 17 && hr < 21) greet = "สวัสดีตอนเย็นครับ";
+                greetEl.innerText = greet;
             };
             tick();
             setInterval(tick, 1000);
         }
 
-        // --- STABLE VOICE CONTROL ---
-        function initVoice() {
-            if (!('webkitSpeechRecognition' in window)) return;
+        function setAmount(n) { document.getElementById('inputAmount').value = n; }
+
+        function handleSave() {
+            const valInput = document.getElementById('inputAmount');
+            const val = parseFloat(valInput.value);
             
-            recognition = new webkitSpeechRecognition();
-            recognition.continuous = true;
-            recognition.lang = 'th-TH';
-            recognition.interimResults = false;
-
-            recognition.onstart = () => {
-                micActive = true;
-                document.getElementById('voiceBtn').classList.add('mic-active');
-                document.getElementById('voiceIndicatorDot').className = "w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-[0_0_8px_#10b981]";
-            };
-
-            recognition.onresult = (e) => {
-                const cmd = e.results[e.results.length - 1][0].transcript.trim().toLowerCase();
-                console.log("AI Voice Command:", cmd);
-
-                if (cmd.includes("เปิดเมนู")) toggleMenu(true);
-                else if (cmd.includes("ปิดเมนู")) toggleMenu(false);
-                else if (cmd.includes("ออนไลน์") || cmd.includes("เปิดระบบ")) setMode(true);
-                else if (cmd.includes("ออฟไลน์") || cmd.includes("ปิดระบบ")) setMode(false);
-            };
-
-            recognition.onend = () => {
-                micActive = false;
-                document.getElementById('voiceBtn').classList.remove('mic-active');
-                document.getElementById('voiceIndicatorDot').className = "w-2.5 h-2.5 rounded-full bg-gray-600";
-                
-                // Auto restart if not locked
-                if (!appState.micLocked) {
-                    setTimeout(() => {
-                        try { recognition.start(); } catch(e) {}
-                    }, 1000);
-                }
-            };
-
-            if (!appState.micLocked) recognition.start();
-        }
-
-        document.getElementById('toggleMicLock').onclick = () => {
-            appState.micLocked = !appState.micLocked;
-            const btn = document.getElementById('toggleMicLock');
-            if (appState.micLocked) {
-                btn.classList.replace('text-rose-500', 'text-gray-500');
-                btn.innerHTML = '<i class="fas fa-lock"></i>';
-                recognition.stop();
-                notify("ไมโครโฟนถูกล็อคแล้ว", "fa-lock");
-            } else {
-                btn.classList.replace('text-gray-500', 'text-rose-500');
-                btn.innerHTML = '<i class="fas fa-power-off"></i>';
-                recognition.start();
-                notify("ไมโครโฟนเปิดใช้งานปกติ", "fa-microphone");
-            }
-            saveData();
-        };
-
-        document.getElementById('sidebarToggle').onclick = () => toggleMenu(!sidebarOpen);
-
-        function toggleMenu(open) {
-            sidebarOpen = open;
-            const sidebar = document.getElementById('sidebarV');
-            const workspace = document.getElementById('workspace');
-            if (open) {
-                sidebar.classList.remove('sidebar-hidden');
-                workspace.style.paddingLeft = window.innerWidth > 1024 ? "280px" : "1rem";
-            } else {
-                sidebar.classList.add('sidebar-hidden');
-                workspace.style.paddingLeft = "1rem";
-            }
-        }
-
-        function setMode(online) {
-            appState.isOnline = online;
-            const body = document.getElementById('appBody');
-            const dot = document.getElementById('statusDot');
-            const txt = document.getElementById('statusText');
-            
-            if (online) {
-                body.classList.remove('offline-mode');
-                dot.className = "w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_#10b981]";
-                txt.innerText = "Online";
-                notify("ระบบออนไลน์ - ข้อมูลพร้อมซิงค์", "fa-globe");
-            } else {
-                body.classList.add('offline-mode');
-                dot.className = "w-2 h-2 rounded-full bg-rose-500 shadow-[0_0_8px_#ef4444]";
-                txt.innerText = "Offline";
-                notify("ระบบออฟไลน์ - ประหยัดพลังงาน", "fa-plane");
-            }
-            saveData();
-        }
-
-        // --- Balance & UI Updates ---
-        function updateUI() {
-            const fmt = (n) => n.toLocaleString('th-TH', { minimumFractionDigits: 2 });
-            document.getElementById('mainBalance').innerText = `฿ ${fmt(appState.balance)}`;
-            document.getElementById('targetText').innerText = `฿ ${fmt(appState.target)}`;
-            
-            const progress = (appState.balance / appState.target) * 100;
-            document.getElementById('mainProgressBar').style.width = `${Math.min(progress, 100)}%`;
-            document.getElementById('percentText').innerText = `${Math.floor(progress)}%`;
-
-            document.getElementById('pocket-main').innerText = `฿ ${fmt(appState.pockets.main)}`;
-            document.getElementById('pocket-invest').innerText = `฿ ${fmt(appState.pockets.invest)}`;
-            document.getElementById('pocket-emergency').innerText = `฿ ${fmt(appState.pockets.emergency)}`;
-
-            calculateRank();
-        }
-
-        function calculateRank() {
-            const b = appState.balance;
-            let rank = "BRONZE", icon = "fa-shield-halved", color = "#cd7f32", title = "Bronze Saver";
-            
-            if (b >= 500000) { rank = "RADIANT"; icon = "fa-sun"; color = "#00e5ff"; title = "Radiant Legend"; }
-            else if (b >= 100000) { rank = "LEGEND"; icon = "fa-dragon"; color = "#ffd700"; title = "Legendary Saver"; }
-            else if (b >= 50000) { rank = "GOLD"; icon = "fa-crown"; color = "#ffd700"; title = "Gold Master"; }
-            else if (b >= 10000) { rank = "SILVER"; icon = "fa-medal"; color = "#c0c0c0"; title = "Silver Saver"; }
-
-            appState.rank = rank;
-            const display = document.getElementById('currentRankDisplay');
-            display.innerText = rank;
-            display.style.color = color;
-            display.style.borderColor = color + "44";
-
-            document.getElementById('rankIcon').style.color = color;
-            document.getElementById('rankIcon').innerHTML = `<i class="fas ${icon}"></i>`;
-            document.getElementById('rankTitle').innerText = title;
-            document.getElementById('rankTitle').style.color = color;
-
-            ['bronze', 'silver', 'gold', 'legend', 'radiant'].forEach(r => {
-                const el = document.getElementById(`r-${r}`);
-                if(el){
-                    el.style.opacity = "0.3";
-                    el.style.borderColor = "transparent";
-                }
-            });
-            const active = document.getElementById(`r-${rank.toLowerCase()}`);
-            if(active){
-                active.style.opacity = "1";
-                active.style.borderColor = color;
-                active.style.backgroundColor = color + "11";
-            }
-        }
-
-        function quickAdd(n) {
-            const input = document.getElementById('saveAmount');
-            input.value = (parseFloat(input.value) || 0) + n;
-        }
-
-        function processSave() {
-            if (!appState.isOnline) {
-                notify("ไม่สามารถบันทึกได้ในโหมดออฟไลน์", "fa-exclamation-triangle");
-                return;
-            }
-
-            const val = parseFloat(document.getElementById('saveAmount').value);
             if (isNaN(val) || val < 50) {
-                notify("เงินออมขั้นต่ำคือ 50 บาทขึ้นไป", "fa-info-circle");
+                notify('ออมขั้นต่ำคือ 50 บาทครับ', 'fa-exclamation-triangle');
                 return;
             }
 
+            // แยกกระเป๋า 70/20/10
             appState.balance += val;
             appState.pockets.main += val * 0.7;
             appState.pockets.invest += val * 0.2;
-            appState.pockets.emergency += val * 0.1;
+            appState.pockets.emerge += val * 0.1;
             
             appState.history.push({ date: new Date().toISOString(), amount: val });
             
+            notify(`บันทึกเรียบร้อย: +฿${val.toLocaleString()}`, 'fa-wallet');
+            valInput.value = '';
+            
             saveData();
             updateUI();
-            notify(`ออมสำเร็จ: +฿${val.toLocaleString()}`, "fa-check-circle");
-            document.getElementById('saveAmount').value = "";
+            updateAIInsight();
             checkAutoUpgrade();
         }
 
-        // --- AI AUTO UPGRADE (10 SECONDS) ---
-        function checkAutoUpgrade() {
-            if (appState.balance >= appState.target && !isAutoUpdating) {
-                runAutoUpgrade();
-            }
-        }
-
-        function runAutoUpgrade() {
-            isAutoUpdating = true;
-            const ui = document.getElementById('autoUpdateUI');
-            const bar = document.getElementById('autoUpdateBar');
+        function updateUI() {
+            const fmt = (n) => n.toLocaleString('th-TH', { minimumFractionDigits: 2 });
+            document.getElementById('displayBalance').innerText = `฿ ${fmt(appState.balance)}`;
+            document.getElementById('displayTarget').innerText = `฿ ${fmt(appState.target)}`;
             
-            ui.style.display = 'flex';
-            let progress = 0;
-            const interval = setInterval(() => {
-                progress += 1;
-                bar.style.width = `${progress}%`;
-                if (progress >= 100) {
-                    clearInterval(interval);
-                    const increase = appState.balance > 100000 ? 1.2 : 1.5;
-                    appState.target = Math.floor(appState.target * increase);
-                    saveData();
-                    updateUI();
-                    
-                    setTimeout(() => {
-                        ui.style.display = 'none';
-                        isAutoUpdating = false;
-                        notify("AI อัปเกรดเป้าหมายใหม่เรียบร้อย!", "fa-bolt");
-                    }, 500);
-                }
-            }, 100); // 100ms * 100 = 10 Seconds
+            const progress = (appState.balance / appState.target) * 100;
+            document.getElementById('progressBar').style.width = `${Math.min(progress, 100)}%`;
+            document.getElementById('displayPercent').innerText = `${Math.floor(progress)}%`;
+
+            document.getElementById('pocket-main').innerText = `฿ ${fmt(appState.pockets.main)}`;
+            document.getElementById('pocket-invest').innerText = `฿ ${fmt(appState.pockets.invest)}`;
+            document.getElementById('pocket-emerge').innerText = `฿ ${fmt(appState.pockets.emerge)}`;
+
+            updateRankSystem();
         }
 
-        function runLocalAI() {
-            const advice = document.getElementById('aiAdvice');
-            const h = appState.history;
-            if (h.length < 2) {
-                advice.innerText = `"เริ่มต้นได้ดี! การออมสม่ำเสมอคือหัวใจของความมั่งคั่ง"`;
-                return;
-            }
-            const recent = h.slice(-3);
-            const avg = recent.reduce((a, b) => a + b.amount, 0) / recent.length;
+        function updateRankSystem() {
+            const b = appState.balance;
+            let rank = 'BRONZE', icon = 'fa-shield-alt', color = '#94a3b8', nextVal = 10000;
+            
+            if (b >= 100000) { rank = 'LEGEND'; icon = 'fa-dragon'; color = '#ffd700'; nextVal = 0; }
+            else if (b >= 50000) { rank = 'GOLD'; icon = 'fa-crown'; color = '#facc15'; nextVal = 100000; }
+            else if (b >= 10000) { rank = 'SILVER'; icon = 'fa-medal'; color = '#e2e8f0'; nextVal = 50000; }
 
-            if (avg > 1000) advice.innerText = `"วินัยสูงมาก! AI แนะนำให้ขยับเป้าหมายในกระเป๋า Investment เพิ่ม"`;
-            else if (appState.balance < appState.target * 0.5) advice.innerText = `"รักษาจังหวะการออมไว้ คุณมาถูกทางแล้วสำหรับยศ ${appState.rank}"`;
-            else advice.innerText = `"ใกล้ถึงเป้าหมายแล้ว! เตรียมรับเป้าหมายใหม่จาก AI ในเร็วๆ นี้"`;
+            appState.rank = rank;
+            document.getElementById('rankBadgeTop').innerText = rank;
+            document.getElementById('rankBadgeTop').style.color = color;
+            
+            // Rank Page
+            document.getElementById('rankIconMain').innerHTML = `<i class="fas ${icon}"></i>`;
+            document.getElementById('rankIconMain').style.color = color;
+            document.getElementById('rankBgIcon').className = `fas ${icon} text-[20rem]`;
+            document.getElementById('rankTitleMain').innerText = `${rank} SAVER`;
+            document.getElementById('rankTitleMain').style.color = color;
+            
+            if (nextVal > 0) {
+                document.getElementById('rankNext').innerText = `ออมเพิ่มอีก ฿ ${(nextVal - b).toLocaleString()} เพื่อเลื่อนขั้นสู่ ${rank === 'BRONZE' ? 'SILVER' : rank === 'SILVER' ? 'GOLD' : 'LEGEND'}`;
+            } else {
+                document.getElementById('rankNext').innerText = `สุดยอดนักออม! คุณบรรลุระดับสูงสุดแล้ว`;
+            }
+
+            // Cards opacity
+            document.querySelectorAll('#page-ranks .p-6').forEach(el => el.classList.replace('opacity-100', 'opacity-30'));
+            const activeCard = document.getElementById(`r-${rank}`);
+            if (activeCard) {
+                activeCard.classList.remove('opacity-30');
+                activeCard.classList.add('opacity-100', 'active-rank-card');
+                activeCard.style.color = color;
+            }
+        }
+
+        function checkAutoUpgrade() {
+            if (appState.balance >= appState.target) {
+                const overlay = document.getElementById('upgradeOverlay');
+                const bar = document.getElementById('upgradeBar');
+                overlay.classList.remove('hidden');
+                
+                let p = 0;
+                const speed = 100; // 10 seconds total (100ms * 100 steps)
+                const interval = setInterval(() => {
+                    p += 1;
+                    bar.style.width = `${p}%`;
+                    if (p >= 100) {
+                        clearInterval(interval);
+                        // AI Calculate new Target (Increase 40% - 60% based on history)
+                        const historyAvg = appState.history.length > 0 ? 
+                            appState.history.slice(-5).reduce((a,b) => a+b.amount, 0) / Math.min(appState.history.length, 5) : 1000;
+                        
+                        const growthFactor = historyAvg > 2000 ? 1.8 : 1.5;
+                        appState.target = Math.floor(appState.target * growthFactor);
+                        
+                        saveData();
+                        updateUI();
+                        
+                        setTimeout(() => {
+                            overlay.classList.add('hidden');
+                            bar.style.width = '0%';
+                            notify('Meta AI อัพเกรดเป้าหมายใหม่ให้แล้วครับ', 'fa-bolt');
+                        }, 500);
+                    }
+                }, speed);
+            }
+        }
+
+        function updateAIInsight() {
+            const h = appState.history;
+            const insight = document.getElementById('aiInsight');
+            if (h.length === 0) return;
+
+            const recent = h.slice(-5);
+            const avg = recent.reduce((sum, item) => sum + item.amount, 0) / recent.length;
+            
+            // Random Graph Animation
+            for (let i = 1; i <= 7; i++) {
+                const bar = document.getElementById(`bar-${i}`);
+                bar.style.height = `${20 + Math.random() * 70}%`;
+                bar.classList.replace('bg-cyan-500/20', 'bg-cyan-500/40');
+            }
+            document.getElementById('bar-7').classList.replace('bg-cyan-500/40', 'bg-cyan-500');
+
+            // Logical Insight
+            if (avg > 2000) insight.innerText = `"วินัยดีมาก! ออมเฉลี่ยต่อครั้งสูงถึง ฿${Math.floor(avg).toLocaleString()} AI แนะนำให้เน้นเติม Invest Pocket เพื่อโอกาสเติบโต"`;
+            else if (appState.balance > appState.target * 0.8) insight.innerText = `"ใกล้บรรลุเป้าหมายแล้ว! ออมเพิ่มอีกนิด AI พร้อมอัพเกรดระบบให้คุณทันที"`;
+            else insight.innerText = `"ความสม่ำเสมอคือหัวใจสำคัญ ยิ่งออมบ่อย AI ยิ่งวิเคราะห์ข้อมูลได้แม่นยำขึ้นครับ"`;
         }
 
         function showPage(id) {
             document.querySelectorAll('.page-view').forEach(p => p.classList.add('hidden'));
             document.getElementById(`page-${id}`).classList.remove('hidden');
-            if (window.innerWidth < 1024) toggleMenu(false);
+            if (window.innerWidth < 1024) {
+                sidebarOpen = false;
+                document.getElementById('sidebarV').classList.add('sidebar-hidden');
+                document.getElementById('mainContent').style.paddingLeft = '1rem';
+            }
         }
 
-        function notify(msg, iconClass) {
+        function notify(msg, icon) {
             const toast = document.getElementById('toast');
             document.getElementById('toastMsg').innerText = msg;
-            document.getElementById('toastIcon').innerHTML = `<i class="fas ${iconClass}"></i>`;
+            document.getElementById('toastIcon').innerHTML = `<i class="fas ${icon}"></i>`;
             toast.classList.remove('translate-y-40');
             setTimeout(() => toast.classList.add('translate-y-40'), 3000);
+        }
+
+        function initInterface() {
+            // Check Screen resizing for mobile sidebar
+            window.addEventListener('resize', () => {
+                if (window.innerWidth < 1024) {
+                    document.getElementById('mainContent').style.paddingLeft = '1rem';
+                } else if (sidebarOpen) {
+                    document.getElementById('mainContent').style.paddingLeft = '280px';
+                }
+            });
         }
     </script>
 </body>
