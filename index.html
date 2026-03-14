@@ -22,7 +22,7 @@
             overflow-x: hidden;
             margin: 0;
             user-select: none;
-            transition: all 0.3s ease;
+            transition: background 0.5s ease;
         }
 
         .glass-card {
@@ -46,16 +46,8 @@
 
         .sidebar-hidden { transform: translateX(-100%); }
 
-        .rank-radiant { color: #00e5ff; text-shadow: 0 0 12px rgba(0, 229, 255, 0.6); }
-        .rank-legend { color: #ffd700; text-shadow: 0 0 8px rgba(255, 215, 0, 0.4); }
-
-        @keyframes pulse-cyan {
-            0% { box-shadow: 0 0 0 0 rgba(0, 229, 255, 0.4); }
-            70% { box-shadow: 0 0 0 10px rgba(0, 229, 255, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(0, 229, 255, 0); }
-        }
-        .mic-active { animation: pulse-cyan 1.5s infinite; color: var(--primary) !important; }
-
+        .mic-active { color: var(--primary) !important; filter: drop-shadow(0 0 8px var(--primary)); }
+        
         .auto-update-overlay {
             position: fixed;
             inset: 0;
@@ -67,39 +59,44 @@
             justify-content: center;
         }
 
-        .offline-mode { filter: grayscale(0.5) contrast(1.2); }
+        .offline-mode { filter: grayscale(0.4) contrast(1.1); background: #1a1a1a; }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(0, 229, 255, 0.2); border-radius: 10px; }
     </style>
 </head>
 <body id="appBody">
 
-    <!-- Auto Update UI -->
+    <!-- Auto Update UI (10 Seconds) -->
     <div id="autoUpdateUI" class="auto-update-overlay">
-        <div class="text-cyan-400 text-7xl mb-6 animate-bounce"><i class="fas fa-microchip"></i></div>
-        <h2 class="text-3xl font-bold uppercase tracking-widest text-white">Meta AI Upgrade System</h2>
-        <p class="text-gray-400 mt-2 text-lg">กำลังคำนวณเป้าหมายใหม่ให้อัตโนมัติ (10 วินาที)</p>
-        <div class="mt-10 w-80 bg-gray-800 h-3 rounded-full overflow-hidden">
-            <div id="autoUpdateBar" class="h-full bg-gradient-to-r from-cyan-400 to-blue-500 w-0 transition-all duration-1000"></div>
+        <div class="text-cyan-400 text-7xl mb-6 animate-pulse"><i class="fas fa-microchip"></i></div>
+        <h2 class="text-3xl font-bold uppercase tracking-widest text-white">AI Upgrading Target</h2>
+        <p class="text-gray-400 mt-2 text-lg">วิเคราะห์และคำนวณเป้าหมายใหม่ (10 วินาที)</p>
+        <div class="mt-10 w-80 bg-gray-800 h-2 rounded-full overflow-hidden">
+            <div id="autoUpdateBar" class="h-full bg-gradient-to-r from-cyan-400 to-blue-500 w-0"></div>
         </div>
     </div>
 
-    <!-- Sidebar (Vertical Menu) -->
+    <!-- Sidebar Menu (แนวตั้ง) -->
     <aside id="sidebarV" class="sidebar-v sidebar-hidden flex flex-col p-6 shadow-2xl">
         <div class="flex items-center gap-3 mb-10 p-2">
-            <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center text-slate-900 text-2xl font-black">N</div>
+            <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center text-slate-900 text-2xl font-black shadow-lg">N</div>
             <div>
                 <h2 class="font-bold text-xl leading-none text-white">NovaSave</h2>
                 <span class="text-[10px] text-cyan-400 font-bold tracking-widest uppercase">Version X1-3 Final</span>
             </div>
         </div>
 
-        <nav class="space-y-3 flex-1">
+        <nav class="space-y-2 flex-1">
             <button onclick="showPage('home')" class="w-full flex items-center gap-4 p-4 rounded-2xl hover:bg-white/5 transition group text-left">
                 <i class="fas fa-home w-6 text-gray-500 group-hover:text-cyan-400"></i>
                 <span class="text-base font-medium text-white">หน้าหลัก</span>
             </button>
             <button onclick="showPage('pockets')" class="w-full flex items-center gap-4 p-4 rounded-2xl hover:bg-white/5 transition group text-left">
                 <i class="fas fa-wallet w-6 text-gray-500 group-hover:text-purple-400"></i>
-                <span class="text-base font-medium text-white">Cloud Pocket</span>
+                <span class="text-base font-medium text-white">Cloud Pockets</span>
             </button>
             <button onclick="showPage('ranks')" class="w-full flex items-center gap-4 p-4 rounded-2xl hover:bg-white/5 transition group text-left">
                 <i class="fas fa-award w-6 text-gray-500 group-hover:text-yellow-400"></i>
@@ -113,8 +110,7 @@
                 <div id="voiceIndicatorDot" class="w-2.5 h-2.5 rounded-full bg-gray-600"></div>
             </div>
             <div class="space-y-1">
-                <p class="text-[10px] text-cyan-400">"เปิดเมนู / ปิดเมนู"</p>
-                <p class="text-[10px] text-purple-400">"ออนไลน์ / ออฟไลน์"</p>
+                <p class="text-[9px] text-cyan-400/80 italic">"สั่งงานด้วยเสียงเพื่อเปิด/ปิดเมนู"</p>
             </div>
         </div>
     </aside>
@@ -122,37 +118,41 @@
     <!-- Top Header -->
     <header class="fixed top-0 left-0 right-0 h-20 px-6 flex justify-between items-center z-[1000] bg-slate-900/80 backdrop-blur-xl border-b border-white/5">
         <div class="flex items-center gap-6">
-            <button id="sidebarToggle" class="w-10 h-10 flex items-center justify-center text-2xl text-cyan-400 hover:scale-110 transition"><i class="fas fa-bars"></i></button>
+            <button id="sidebarToggle" class="w-10 h-10 flex items-center justify-center text-2xl text-cyan-400 hover:scale-110 transition">
+                <i class="fas fa-bars-staggered"></i>
+            </button>
             <div>
-                <h3 id="greetingText" class="text-base font-bold text-white leading-none mb-1">สวัสดีครับ...</h3>
+                <h3 id="greetingText" class="text-base font-bold text-white leading-none mb-1">...</h3>
                 <p id="liveDate" class="text-[11px] text-cyan-400 font-mono tracking-wider"></p>
             </div>
         </div>
 
-        <div class="flex items-center gap-4">
-            <div id="statusIndicator" class="flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-800 border border-white/5">
+        <div class="flex items-center gap-3">
+            <div id="statusIndicator" class="flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-800/50 border border-white/5">
                 <div id="statusDot" class="w-2 h-2 rounded-full bg-emerald-500"></div>
                 <span id="statusText" class="text-[10px] font-bold uppercase tracking-widest text-white">Online</span>
             </div>
-            <button id="voiceBtn" class="w-12 h-12 rounded-xl bg-slate-800 border border-white/10 flex items-center justify-center text-gray-400 hover:bg-slate-700 transition relative">
-                <i class="fas fa-microphone"></i>
-                <span id="micLiveIcon" class="hidden absolute -top-1 -right-1 h-3 w-3">
-                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
-                    <span class="relative inline-flex rounded-full h-3 w-3 bg-cyan-500"></span>
-                </span>
-            </button>
+            
+            <div class="flex items-center bg-slate-800/50 rounded-xl p-1 border border-white/5">
+                <button id="voiceBtn" class="w-10 h-10 rounded-lg flex items-center justify-center text-gray-400 hover:text-cyan-400 transition relative">
+                    <i class="fas fa-microphone"></i>
+                </button>
+                <button id="toggleMicLock" class="w-10 h-10 rounded-lg flex items-center justify-center text-rose-500 hover:bg-rose-500/10 transition" title="ป้องกันไมค์เปิดอัตโนมัติ">
+                    <i class="fas fa-power-off"></i>
+                </button>
+            </div>
         </div>
     </header>
 
     <!-- Main Workspace -->
     <main id="workspace" class="pt-28 pb-10 px-4 md:px-10 max-w-6xl mx-auto transition-all duration-500">
         
-        <!-- DASHBOARD -->
+        <!-- DASHBOARD PAGE -->
         <section id="page-home" class="page-view space-y-8">
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <!-- Balance Card -->
                 <div class="lg:col-span-2 glass-card p-8 flex flex-col justify-between border-l-4 border-cyan-400 relative overflow-hidden">
-                    <div class="absolute -right-10 -top-10 text-[12rem] text-white/5 rotate-12 pointer-events-none"><i class="fas fa-wallet"></i></div>
+                    <div class="absolute -right-10 -top-10 text-[12rem] text-white/5 rotate-12 pointer-events-none"><i class="fas fa-vault"></i></div>
                     <div>
                         <div class="flex justify-between items-center mb-6">
                             <span class="text-xs font-bold uppercase text-gray-400 tracking-widest">ยอดออมสะสมสุทธิ</span>
@@ -171,118 +171,117 @@
                     </div>
                 </div>
 
-                <!-- AI Advice Card -->
+                <!-- AI Analysis -->
                 <div class="glass-card p-8 border-t-4 border-purple-500 flex flex-col justify-between">
                     <div>
                         <div class="flex items-center gap-3 mb-6">
                             <div class="w-12 h-12 rounded-2xl bg-purple-500/20 flex items-center justify-center text-purple-400 text-xl shadow-inner"><i class="fas fa-brain"></i></div>
                             <span class="text-xs font-bold uppercase tracking-widest text-white">Meta AI Analysis</span>
                         </div>
-                        <p id="aiAdvice" class="text-base text-gray-300 leading-relaxed italic font-light">"กำลังตรวจสอบพฤติกรรมการออม..."</p>
+                        <p id="aiAdvice" class="text-base text-gray-300 leading-relaxed italic font-light">"กำลังวิเคราะห์พฤติกรรมการออม..."</p>
                     </div>
                     <div class="mt-8 pt-6 border-t border-white/5 flex justify-between text-[10px] text-gray-500 uppercase font-black">
-                        <span>Status: Stable</span>
-                        <span>Mode: Offline AI</span>
+                        <span>AI Engine: V.X1 Offline</span>
+                        <span class="text-cyan-400">Secure</span>
                     </div>
                 </div>
             </div>
 
             <!-- Input Box -->
             <div class="glass-card p-8 border-b-4 border-emerald-500">
-                <div class="flex flex-col md:flex-row gap-8 items-center">
+                <div class="flex flex-col md:flex-row gap-6 items-center">
                     <div class="flex-1 w-full">
                         <label class="text-[11px] font-bold uppercase text-gray-500 mb-3 block tracking-widest">ระบุยอดเงิน (ขั้นต่ำ 50 บาท)</label>
                         <div class="relative">
                             <span class="absolute left-6 top-1/2 -translate-y-1/2 text-2xl font-bold text-gray-600">฿</span>
-                            <input type="number" id="saveAmount" placeholder="0.00" class="w-full bg-slate-900/50 border-2 border-white/5 rounded-3xl p-6 pl-14 text-3xl font-black focus:outline-none focus:border-cyan-500/50 transition-all text-white">
+                            <input type="number" id="saveAmount" placeholder="0.00" class="w-full bg-slate-900/50 border-2 border-white/10 rounded-3xl p-6 pl-14 text-3xl font-black focus:outline-none focus:border-cyan-500/50 transition-all text-white">
+                        </div>
+                        <div class="flex gap-2 mt-4">
+                            <button onclick="quickAdd(100)" class="px-4 py-2 bg-slate-800 rounded-xl text-xs font-bold text-white hover:bg-cyan-500/20 transition border border-white/5">+100</button>
+                            <button onclick="quickAdd(500)" class="px-4 py-2 bg-slate-800 rounded-xl text-xs font-bold text-white hover:bg-cyan-500/20 transition border border-white/5">+500</button>
+                            <button onclick="quickAdd(1000)" class="px-4 py-2 bg-slate-800 rounded-xl text-xs font-bold text-white hover:bg-cyan-500/20 transition border border-white/5">+1,000</button>
                         </div>
                     </div>
-                    <div class="flex gap-4 w-full md:w-auto self-end">
-                        <button onclick="quickSave(100)" class="flex-1 md:w-24 bg-slate-800 p-5 rounded-2xl font-bold hover:bg-slate-700 transition text-white border border-white/5">100</button>
-                        <button onclick="processSave()" class="w-full md:w-auto bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-black px-12 py-6 rounded-3xl transition-all shadow-xl shadow-cyan-500/20 text-lg">บันทึก</button>
-                    </div>
+                    <button onclick="processSave()" class="w-full md:w-auto bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-black px-14 py-6 rounded-3xl transition-all shadow-xl shadow-cyan-500/20 text-lg">บันทึกยอดออม</button>
                 </div>
             </div>
         </section>
 
-        <!-- CLOUD POCKETS -->
+        <!-- CLOUD POCKETS PAGE -->
         <section id="page-pockets" class="page-view hidden space-y-8">
             <h2 class="text-3xl font-black flex items-center gap-4 text-white"><i class="fas fa-layer-group text-cyan-400"></i> Cloud Pocket System</h2>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <div class="glass-card p-8 border-l-4 border-cyan-400 hover:translate-y-[-5px] transition-transform">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="glass-card p-8 border-l-4 border-cyan-400">
                     <div class="flex justify-between items-start mb-6">
                         <div class="w-12 h-12 rounded-2xl bg-cyan-400/10 flex items-center justify-center text-cyan-400"><i class="fas fa-piggy-bank"></i></div>
-                        <span class="text-[10px] font-black uppercase text-cyan-400 bg-cyan-400/5 px-3 py-1 rounded-full">Main Pocket</span>
+                        <span class="text-[10px] font-black uppercase text-cyan-400 bg-cyan-400/5 px-3 py-1 rounded-full">Primary (70%)</span>
                     </div>
                     <p id="pocket-main" class="text-4xl font-black text-white">฿ 0.00</p>
-                    <p class="text-[11px] text-gray-500 mt-2">ยอดออมหลัก 70%</p>
                 </div>
-                <div class="glass-card p-8 border-l-4 border-purple-400 hover:translate-y-[-5px] transition-transform">
+                <div class="glass-card p-8 border-l-4 border-purple-400">
                     <div class="flex justify-between items-start mb-6">
                         <div class="w-12 h-12 rounded-2xl bg-purple-400/10 flex items-center justify-center text-purple-400"><i class="fas fa-chart-line"></i></div>
-                        <span class="text-[10px] font-black uppercase text-purple-400 bg-purple-400/5 px-3 py-1 rounded-full">Investment</span>
+                        <span class="text-[10px] font-black uppercase text-purple-400 bg-purple-400/5 px-3 py-1 rounded-full">Investment (20%)</span>
                     </div>
                     <p id="pocket-invest" class="text-4xl font-black text-white">฿ 0.00</p>
-                    <p class="text-[11px] text-gray-500 mt-2">เพื่อการลงทุน 20%</p>
                 </div>
-                <div class="glass-card p-8 border-l-4 border-emerald-400 hover:translate-y-[-5px] transition-transform">
+                <div class="glass-card p-8 border-l-4 border-emerald-400">
                     <div class="flex justify-between items-start mb-6">
-                        <div class="w-12 h-12 rounded-2xl bg-emerald-400/10 flex items-center justify-center text-emerald-400"><i class="fas fa-first-aid"></i></div>
-                        <span class="text-[10px] font-black uppercase text-emerald-400 bg-emerald-400/5 px-3 py-1 rounded-full">Emergency</span>
+                        <div class="w-12 h-12 rounded-2xl bg-emerald-400/10 flex items-center justify-center text-emerald-400"><i class="fas fa-briefcase-medical"></i></div>
+                        <span class="text-[10px] font-black uppercase text-emerald-400 bg-emerald-400/5 px-3 py-1 rounded-full">Emergency (10%)</span>
                     </div>
                     <p id="pocket-emergency" class="text-4xl font-black text-white">฿ 0.00</p>
-                    <p class="text-[11px] text-gray-500 mt-2">ทุนฉุกเฉิน 10%</p>
                 </div>
             </div>
         </section>
 
-        <!-- RANKS -->
+        <!-- RANKS PAGE -->
         <section id="page-ranks" class="page-view hidden">
             <div class="glass-card p-12 text-center relative overflow-hidden">
-                <div id="rankIcon" class="text-9xl mb-8 transition-all duration-700"><i class="fas fa-shield-alt"></i></div>
+                <div id="rankIcon" class="text-9xl mb-8 transition-all duration-700 text-cyan-400"><i class="fas fa-shield-halved"></i></div>
                 <h2 id="rankTitle" class="text-5xl font-black mb-4 uppercase tracking-tighter text-white">Bronze Saver</h2>
-                <p id="rankDesc" class="text-gray-400 text-lg mb-12 max-w-md mx-auto">จุดเริ่มต้นของมหาเศรษฐี เริ่มต้นออมวันนี้เพื่อยศที่สูงขึ้น</p>
+                <p id="rankDesc" class="text-gray-400 text-lg mb-12 max-w-md mx-auto">สะสมเงินออมเพื่อเลื่อนระดับยศและปลดล็อกฟีเจอร์ระดับสูง</p>
                 
                 <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
-                    <div class="p-5 rounded-2xl bg-slate-800/50 border border-white/5 opacity-40 transition-all" id="r-bronze">
-                        <i class="fas fa-shield-alt block mb-2"></i>
-                        <span class="text-xs font-bold">BRONZE</span><br><span class="text-[10px]">0+</span>
+                    <div class="p-6 rounded-2xl bg-slate-800/40 border-2 border-transparent transition-all" id="r-bronze">
+                        <i class="fas fa-shield-halved block mb-3 text-2xl"></i>
+                        <span class="text-xs font-bold">BRONZE</span><br><span class="text-[10px] text-gray-500">เริ่มต้น</span>
                     </div>
-                    <div class="p-5 rounded-2xl bg-slate-800/50 border border-white/5 opacity-40 transition-all" id="r-silver">
-                        <i class="fas fa-medal block mb-2"></i>
-                        <span class="text-xs font-bold">SILVER</span><br><span class="text-[10px]">10K+</span>
+                    <div class="p-6 rounded-2xl bg-slate-800/40 border-2 border-transparent transition-all" id="r-silver">
+                        <i class="fas fa-medal block mb-3 text-2xl"></i>
+                        <span class="text-xs font-bold">SILVER</span><br><span class="text-[10px] text-gray-500">10K+</span>
                     </div>
-                    <div class="p-5 rounded-2xl bg-slate-800/50 border border-white/5 opacity-40 transition-all" id="r-gold">
-                        <i class="fas fa-crown block mb-2"></i>
-                        <span class="text-xs font-bold">GOLD</span><br><span class="text-[10px]">50K+</span>
+                    <div class="p-6 rounded-2xl bg-slate-800/40 border-2 border-transparent transition-all" id="r-gold">
+                        <i class="fas fa-crown block mb-3 text-2xl"></i>
+                        <span class="text-xs font-bold">GOLD</span><br><span class="text-[10px] text-gray-500">50K+</span>
                     </div>
-                    <div class="p-5 rounded-2xl bg-slate-800/50 border border-white/5 opacity-40 transition-all" id="r-legend">
-                        <i class="fas fa-dragon block mb-2"></i>
-                        <span class="text-xs font-bold">LEGEND</span><br><span class="text-[10px]">100K+</span>
+                    <div class="p-6 rounded-2xl bg-slate-800/40 border-2 border-transparent transition-all" id="r-legend">
+                        <i class="fas fa-dragon block mb-3 text-2xl"></i>
+                        <span class="text-xs font-bold">LEGEND</span><br><span class="text-[10px] text-gray-500">100K+</span>
                     </div>
-                    <div class="p-5 rounded-2xl bg-slate-800/50 border border-white/5 opacity-40 transition-all" id="r-radiant">
-                        <i class="fas fa-sun block mb-2"></i>
-                        <span class="text-xs font-bold">RADIANT</span><br><span class="text-[10px]">500K+</span>
+                    <div class="p-6 rounded-2xl bg-slate-800/40 border-2 border-transparent transition-all" id="r-radiant">
+                        <i class="fas fa-sun block mb-3 text-2xl"></i>
+                        <span class="text-xs font-bold">RADIANT</span><br><span class="text-[10px] text-gray-500">500K+</span>
                     </div>
                 </div>
             </div>
         </section>
-
     </main>
 
-    <!-- Global Toast Notification -->
+    <!-- Toast Notification System -->
     <div id="toast" class="fixed bottom-10 right-10 z-[5000] transform translate-y-40 transition-all duration-500">
         <div class="glass-card px-8 py-5 flex items-center gap-5 bg-slate-900 border-cyan-500 shadow-2xl">
             <div id="toastIcon" class="w-12 h-12 rounded-full bg-cyan-500/20 flex items-center justify-center text-cyan-400 text-xl"><i class="fas fa-info-circle"></i></div>
             <div>
                 <h4 class="text-[10px] font-black uppercase tracking-[0.2em] text-cyan-500 mb-1">System Message</h4>
-                <p id="toastMsg" class="text-base text-white font-medium">บันทึกสำเร็จ</p>
+                <p id="toastMsg" class="text-base text-white font-medium">ทำรายการสำเร็จ</p>
             </div>
         </div>
     </div>
 
     <script>
         // --- Core State Management ---
+        const STORAGE_KEY = 'novasave_vx1_3_final_stable';
         let appState = {
             balance: 0,
             target: 10000,
@@ -290,16 +289,13 @@
             history: [],
             isOnline: true,
             rank: 'BRONZE',
-            lastUpdated: new Date().toISOString()
+            micLocked: false
         };
 
-        const STORAGE_KEY = 'novasave_vx1_3_final';
+        let recognition = null;
+        let micActive = false;
         let sidebarOpen = false;
         let isAutoUpdating = false;
-        
-        // --- SECURE VOICE CONTROLLER (FIXED) ---
-        let recognition = null;
-        let micStatus = 'IDLE'; // IDLE, STARTING, ACTIVE, STOPPING
 
         // --- Initialization ---
         window.addEventListener('load', () => {
@@ -309,8 +305,6 @@
             updateUI();
             checkAutoUpgrade();
             setInterval(runLocalAI, 30000);
-            
-            // Sync current online state
             setMode(appState.isOnline);
         });
 
@@ -325,7 +319,7 @@
             localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
         }
 
-        // --- Clock & Greeting ---
+        // --- Clock & Greeting (Dynamic) ---
         function startTime() {
             const dateEl = document.getElementById('liveDate');
             const greetEl = document.getElementById('greetingText');
@@ -338,18 +332,19 @@
                 });
 
                 const hr = now.getHours();
-                let msg = "สวัสดีตอนคืนครับ";
-                if (hr >= 5 && hr < 11) msg = "สวัสดีตอนเช้าครับ";
-                else if (hr >= 11 && hr < 14) msg = "สวัสดีตอนสายครับ";
-                else if (hr >= 14 && hr < 17) msg = "สวัสดีตอนบ่ายครับ";
-                else if (hr >= 17 && hr < 21) msg = "สวัสดีตอนเย็นครับ";
+                let msg = "สวัสดีตอนค่ำครับ";
+                if (hr >= 5 && hr < 9) msg = "สวัสดีตอนเช้าครับ";
+                else if (hr >= 9 && hr < 11) msg = "สวัสดีตอนสายครับ";
+                else if (hr >= 11 && hr < 13) msg = "สวัสดีตอนเที่ยงครับ";
+                else if (hr >= 13 && hr < 17) msg = "สวัสดีตอนบ่ายครับ";
+                else if (hr >= 17 && hr < 20) msg = "สวัสดีตอนเย็นครับ";
                 greetEl.innerText = msg;
             };
             tick();
             setInterval(tick, 1000);
         }
 
-        // --- ENHANCED STABLE VOICE CONTROL ---
+        // --- STABLE VOICE CONTROL ---
         function initVoice() {
             if (!('webkitSpeechRecognition' in window)) return;
             
@@ -359,67 +354,55 @@
             recognition.interimResults = false;
 
             recognition.onstart = () => {
-                micStatus = 'ACTIVE';
-                updateMicUI(true);
+                micActive = true;
+                document.getElementById('voiceBtn').classList.add('mic-active');
+                document.getElementById('voiceIndicatorDot').className = "w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-[0_0_8px_#10b981]";
             };
 
             recognition.onresult = (e) => {
                 const cmd = e.results[e.results.length - 1][0].transcript.trim().toLowerCase();
+                console.log("AI Voice Command:", cmd);
+
                 if (cmd.includes("เปิดเมนู")) toggleMenu(true);
                 else if (cmd.includes("ปิดเมนู")) toggleMenu(false);
-                else if (cmd.includes("ออนไลน์")) setMode(true);
-                else if (cmd.includes("ออฟไลน์")) setMode(false);
-            };
-
-            recognition.onerror = () => {
-                micStatus = 'IDLE';
-                updateMicUI(false);
-                setTimeout(restartMicSafe, 2000);
+                else if (cmd.includes("ออนไลน์") || cmd.includes("เปิดระบบ")) setMode(true);
+                else if (cmd.includes("ออฟไลน์") || cmd.includes("ปิดระบบ")) setMode(false);
             };
 
             recognition.onend = () => {
-                micStatus = 'IDLE';
-                updateMicUI(false);
-                setTimeout(restartMicSafe, 1000);
+                micActive = false;
+                document.getElementById('voiceBtn').classList.remove('mic-active');
+                document.getElementById('voiceIndicatorDot').className = "w-2.5 h-2.5 rounded-full bg-gray-600";
+                
+                // Auto restart if not locked
+                if (!appState.micLocked) {
+                    setTimeout(() => {
+                        try { recognition.start(); } catch(e) {}
+                    }, 1000);
+                }
             };
 
-            restartMicSafe();
+            if (!appState.micLocked) recognition.start();
         }
 
-        function restartMicSafe() {
-            // Strict check to prevent InvalidStateError
-            if (micStatus === 'IDLE' && recognition) {
-                try {
-                    micStatus = 'STARTING';
-                    recognition.start();
-                } catch(e) {
-                    micStatus = 'IDLE';
-                    console.log("Mic start attempt failed:", e.message);
-                }
-            }
-        }
-
-        function updateMicUI(active) {
-            const btn = document.getElementById('voiceBtn');
-            const live = document.getElementById('micLiveIcon');
-            const dot = document.getElementById('voiceIndicatorDot');
-            
-            if (active) {
-                btn.classList.add('mic-active');
-                live.classList.remove('hidden');
-                dot.className = "w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-[0_0_8px_#10b981]";
+        document.getElementById('toggleMicLock').onclick = () => {
+            appState.micLocked = !appState.micLocked;
+            const btn = document.getElementById('toggleMicLock');
+            if (appState.micLocked) {
+                btn.classList.replace('text-rose-500', 'text-gray-500');
+                btn.innerHTML = '<i class="fas fa-lock"></i>';
+                recognition.stop();
+                notify("ไมโครโฟนถูกล็อคแล้ว", "fa-lock");
             } else {
-                btn.classList.remove('mic-active');
-                live.classList.add('hidden');
-                dot.className = "w-2.5 h-2.5 rounded-full bg-gray-600";
+                btn.classList.replace('text-gray-500', 'text-rose-500');
+                btn.innerHTML = '<i class="fas fa-power-off"></i>';
+                recognition.start();
+                notify("ไมโครโฟนเปิดใช้งานปกติ", "fa-microphone");
             }
-        }
+            saveData();
+        };
 
         document.getElementById('sidebarToggle').onclick = () => toggleMenu(!sidebarOpen);
-        document.getElementById('voiceBtn').onclick = () => {
-            if (micStatus === 'IDLE') restartMicSafe();
-            notify("ไมโครโฟน AI กำลังทำงาน...", "fa-microphone");
-        };
 
         function toggleMenu(open) {
             sidebarOpen = open;
@@ -444,17 +427,17 @@
                 body.classList.remove('offline-mode');
                 dot.className = "w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_#10b981]";
                 txt.innerText = "Online";
-                notify("ออนไลน์ - ระบบเสถียร", "fa-globe");
+                notify("ระบบออนไลน์ - ข้อมูลพร้อมซิงค์", "fa-globe");
             } else {
                 body.classList.add('offline-mode');
                 dot.className = "w-2 h-2 rounded-full bg-rose-500 shadow-[0_0_8px_#ef4444]";
                 txt.innerText = "Offline";
-                notify("ออฟไลน์ - ประหยัดพลังงาน", "fa-plane");
+                notify("ระบบออฟไลน์ - ประหยัดพลังงาน", "fa-plane");
             }
             saveData();
         }
 
-        // --- Balance & UI Logic ---
+        // --- Balance & UI Updates ---
         function updateUI() {
             const fmt = (n) => n.toLocaleString('th-TH', { minimumFractionDigits: 2 });
             document.getElementById('mainBalance').innerText = `฿ ${fmt(appState.balance)}`;
@@ -473,7 +456,7 @@
 
         function calculateRank() {
             const b = appState.balance;
-            let rank = "BRONZE", icon = "fa-shield-alt", color = "#cd7f32", title = "Bronze Saver";
+            let rank = "BRONZE", icon = "fa-shield-halved", color = "#cd7f32", title = "Bronze Saver";
             
             if (b >= 500000) { rank = "RADIANT"; icon = "fa-sun"; color = "#00e5ff"; title = "Radiant Legend"; }
             else if (b >= 100000) { rank = "LEGEND"; icon = "fa-dragon"; color = "#ffd700"; title = "Legendary Saver"; }
@@ -495,8 +478,7 @@
                 const el = document.getElementById(`r-${r}`);
                 if(el){
                     el.style.opacity = "0.3";
-                    el.style.borderColor = "rgba(255,255,255,0.05)";
-                    el.style.backgroundColor = "transparent";
+                    el.style.borderColor = "transparent";
                 }
             });
             const active = document.getElementById(`r-${rank.toLowerCase()}`);
@@ -507,17 +489,20 @@
             }
         }
 
-        function quickSave(n) { document.getElementById('saveAmount').value = n; }
+        function quickAdd(n) {
+            const input = document.getElementById('saveAmount');
+            input.value = (parseFloat(input.value) || 0) + n;
+        }
 
         function processSave() {
             if (!appState.isOnline) {
-                notify("โปรดสลับเป็นโหมดออนไลน์ก่อนบันทึก", "fa-exclamation-triangle");
+                notify("ไม่สามารถบันทึกได้ในโหมดออฟไลน์", "fa-exclamation-triangle");
                 return;
             }
 
             const val = parseFloat(document.getElementById('saveAmount').value);
             if (isNaN(val) || val < 50) {
-                notify("การออมขั้นต่ำคือ 50 บาท", "fa-info-circle");
+                notify("เงินออมขั้นต่ำคือ 50 บาทขึ้นไป", "fa-info-circle");
                 return;
             }
 
@@ -530,11 +515,12 @@
             
             saveData();
             updateUI();
-            notify(`บันทึกสำเร็จ: +฿${val.toLocaleString()}`, "fa-check-circle");
+            notify(`ออมสำเร็จ: +฿${val.toLocaleString()}`, "fa-check-circle");
             document.getElementById('saveAmount').value = "";
             checkAutoUpgrade();
         }
 
+        // --- AI AUTO UPGRADE (10 SECONDS) ---
         function checkAutoUpgrade() {
             if (appState.balance >= appState.target && !isAutoUpdating) {
                 runAutoUpgrade();
@@ -549,36 +535,37 @@
             ui.style.display = 'flex';
             let progress = 0;
             const interval = setInterval(() => {
-                progress += 2;
+                progress += 1;
                 bar.style.width = `${progress}%`;
                 if (progress >= 100) {
                     clearInterval(interval);
-                    const factor = appState.balance > 100000 ? 1.2 : 1.5;
-                    appState.target = Math.floor(appState.target * factor);
+                    const increase = appState.balance > 100000 ? 1.2 : 1.5;
+                    appState.target = Math.floor(appState.target * increase);
                     saveData();
                     updateUI();
                     
                     setTimeout(() => {
                         ui.style.display = 'none';
                         isAutoUpdating = false;
-                        notify("AI อัปเกรดเป้าหมายใหม่แล้ว!", "fa-bolt");
+                        notify("AI อัปเกรดเป้าหมายใหม่เรียบร้อย!", "fa-bolt");
                     }, 500);
                 }
-            }, 200); 
+            }, 100); // 100ms * 100 = 10 Seconds
         }
 
         function runLocalAI() {
             const advice = document.getElementById('aiAdvice');
             const h = appState.history;
             if (h.length < 2) {
-                advice.innerText = `"เริ่มต้นได้สวย! ออมขั้นต่ำ 50 บาททุกวันเพื่อสร้างนิสัย"`;
+                advice.innerText = `"เริ่มต้นได้ดี! การออมสม่ำเสมอคือหัวใจของความมั่งคั่ง"`;
                 return;
             }
             const recent = h.slice(-3);
             const avg = recent.reduce((a, b) => a + b.amount, 0) / recent.length;
 
-            if (avg > 1000) advice.innerText = `"วินัยดีเยี่ยม! Meta AI แนะนำให้โยกเงินเข้า Investment เพิ่มขึ้น"`;
-            else advice.innerText = `"รักษาระดับการออมไว้นะ ยศ ${appState.rank} กำลังมั่นคง"`;
+            if (avg > 1000) advice.innerText = `"วินัยสูงมาก! AI แนะนำให้ขยับเป้าหมายในกระเป๋า Investment เพิ่ม"`;
+            else if (appState.balance < appState.target * 0.5) advice.innerText = `"รักษาจังหวะการออมไว้ คุณมาถูกทางแล้วสำหรับยศ ${appState.rank}"`;
+            else advice.innerText = `"ใกล้ถึงเป้าหมายแล้ว! เตรียมรับเป้าหมายใหม่จาก AI ในเร็วๆ นี้"`;
         }
 
         function showPage(id) {
